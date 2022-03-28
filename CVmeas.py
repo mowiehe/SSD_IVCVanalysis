@@ -1,30 +1,33 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import pdb
 
 
 class CVmeas:
     all = []
 
-    def __init__(self, V, C, freq, CVmode, label, device=None, fmt=None):
+    def __init__(self, V, C, freq, mode, filename, device=None, fmt=None, label=None):
         # initialize with device name, voltage array, capacitance and measurement frequency
         assert type(V) == np.ndarray, "Voltage array as np.ndarray"
         assert type(C) == np.ndarray, "Voltage array as np.ndarray"
         assert type(freq) == float, "Provide measurement frequency as float"
-        assert str.lower(CVmode) == "s" or CVmode == "p", "CVmode is s or p?"
-        assert type(label) == str, "Provide label as str"
+        assert str.lower(mode) == "s" or mode == "p", "mode is s or p?"
+        assert type(filename) == str, "Provide filename as str"
 
         self.is_negative_V = True if V.mean() < 0 else False
         self.V = V * -1 if self.is_negative_V else V
-
         self.C = C
-        self.C2 = 1 / C ** 2
         self.freq = freq
-        self.CVmode = str.lower(CVmode)
-        self.label = label
+        self.mode = str.lower(mode)
+        self.filename = filename
         self.device = device
         self.fmt = fmt
+        self.label = label if label else f"{self.freq}Hz  {self.mode}"
 
         CVmeas.all.append(self)
+
+    def C2(self):
+        return 1 / self.C ** 2
 
 
 prefix = {"m": 1e3, "u": 1e6, "n": 1e9, "p": 1e12, "k": 1e-3, "M": 1e-6, "": 1}
