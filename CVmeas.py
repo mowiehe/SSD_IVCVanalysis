@@ -48,6 +48,20 @@ class CVmeas:
     def C2(self):
         return 1 / self.C ** 2
 
+    def correct_CV_open(self, CV_open):
+        # CV_open can be a CV_meas object or a float value
+        # in case of CV_meas object, freq have to be identical
+        if type(CV_open) == CVmeas:
+            if self.freq == CV_open.freq:
+                if all(self.V == CV_open.V):
+                    CV_open = CV_open.C
+                else:  # take the mean value if different voltages
+                    CV_open = CV_open.C.mean()
+            else:
+                print("Frequencies differ for CV open correction", self.filename)
+                CV_open = np.nan
+        self.C = self.C - CV_open
+
 
 prefix = {"m": 1e3, "u": 1e6, "n": 1e9, "p": 1e12, "k": 1e-3, "M": 1e-6, "": 1}
 
