@@ -6,6 +6,8 @@ import pdb
 def read_CV(filename):
     # one CV instance per frequency and s- p-mode
     meas_type, header, df_single = parse_measurement_file(filename)
+    if meas_type != "Single CV":
+        return -1
     frequencies = df_single.loc[:, "Freq [Hz]"].drop_duplicates()
     CV_list = []
 
@@ -33,6 +35,16 @@ def read_CV(filename):
             CV_list.append(CV)
 
     return CV_list
+
+
+def read_IV(filename):
+    meas_type, header, df_single = parse_measurement_file(filename)
+    if meas_type != "Single IV":
+        return -1
+    I = np.array(df_single["Current [A]"])
+    V = np.array(df_single["Nominal Voltage [V]"])
+
+    return {"V": V, "I": I, "filename": filename}
 
 
 ## from parse_functions.py in HGCAL_strip_analysis
