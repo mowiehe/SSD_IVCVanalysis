@@ -112,7 +112,7 @@ def plot_C2V(meas_list, C2lim=[None, None], Vlim=[None, None]):
     for meas in meas_list:
         # check formatter
         fmt = meas.fmt if meas.fmt else "^"
-        ax.plot(meas.V, meas.C2, fmt, label=meas.label)
+        ax.plot(meas.V, meas.C2(), fmt, label=meas.label)
     ax.set_xlabel("Bias voltage [V]")
     ax.set_ylabel(f"$1 / C^2$ [$1/F^2$]")
     ax.set_xlim(Vlim)
