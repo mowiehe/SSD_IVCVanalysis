@@ -1,3 +1,4 @@
+import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -9,7 +10,9 @@ class CVmeas:
     all_CV = []
 
     @classmethod
-    def intantiate_from_HEPHY_HGCAL(cls, filename, device=None, fmt=None, label=None):
+    def intantiate_from_HEPHY_HGCAL(
+        cls, filename, is_open, device=None, fmt=None, label=None
+    ):
         CV_dict_list = HEPHY_HGCAL_parser.read_CV(filename)
         return [
             CVmeas(
@@ -18,6 +21,7 @@ class CVmeas:
                 CV["freq"],
                 CV["mode"],
                 CV["filename"],
+                is_open=is_open,
                 device=device,
                 fmt=fmt,
                 label=label,
@@ -25,13 +29,33 @@ class CVmeas:
             for CV in CV_dict_list
         ]
 
-    def __init__(self, V, C, freq, mode, filename, device=None, fmt=None, label=None):
+    @classmethod
+    def get_DataFrame(cls):
+        freq = [i.freq for i in cls.all_CV]
+        mode = [i.mode for i in cls.all_CV]
+        filename = [i.filename for i in cls.all_CV]
+        is_open = [i.is_open for i in cls.all_CV]
+        df = pd.DataFrame(
+            {
+                "Filename": filename,
+                "Frequency [Hz]": freq,
+                "CV-mode": mode,
+                "Open measurement": is_open,
+                "CV_meas": cls.all_CV,
+            }
+        )
+        return df
+
+    def __init__(
+        self, V, C, freq, mode, filename, is_open, device=None, fmt=None, label=None
+    ):
         # initialize with device name, voltage array, capacitance and measurement frequency
         assert type(V) == np.ndarray, "Voltage array as np.ndarray"
         assert type(C) == np.ndarray, "Voltage array as np.ndarray"
         assert type(freq) == float, "Provide measurement frequency as float"
         assert str.lower(mode) == "s" or mode == "p", "mode is s or p?"
         assert type(filename) == str, "Provide filename as str"
+        assert type(is_open) == bool, "is_open, True or False?"
 
         self.is_negative_V = True if V.mean() < 0 else False
         self.V = V * -1 if self.is_negative_V else V
@@ -39,6 +63,7 @@ class CVmeas:
         self.freq = freq
         self.mode = str.lower(mode)
         self.filename = filename
+        self.is_open = is_open
         self.device = device
         self.fmt = fmt
         self.label = label if label else f"{self.freq}Hz  {self.mode}"
