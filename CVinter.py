@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from .parser import HEPHY_HGCAL_parser
-import utils
+from . import utils
 import pdb
 
 

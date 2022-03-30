@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-import utils
+from . import utils
 from .parser import HEPHY_HGCAL_parser
 import pdb
 
