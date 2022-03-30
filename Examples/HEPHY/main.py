@@ -21,38 +21,47 @@ f_cvinter_open = (
     script_path + "/HPK_ProtoA_300042_HD_UR_1.4E16_CV_open/cv_inter/cv_inter.dat"
 )
 
+##### CV
+# Instantiate CV measurements
+myCV_list = CV.instantiate_from_HEPHY_HGCAL(f_cv, is_open=False)
+myCV_open_list = CV.instantiate_from_HEPHY_HGCAL(f_cv_open, is_open=True)
 
-# CV
-myCV = CV.instantiate_from_HEPHY_HGCAL(f_cv, is_open=False)
-myCV_open = CV.instantiate_from_HEPHY_HGCAL(f_cv_open, is_open=True)
+# Get data frame of all measurements
+CV_df = CV.get_DataFrame()
+
 # select CV mode and frequency
-# myCV_s = [a for a in myCV if a.mode == "s"]
-CV = myCV[0]
-CV.label = "not corrected"
+freq = CV_df["Frequency [Hz]"] == 10e3
+mode = CV_df["CV-mode"] == "s"
+is_open = CV_df["Open measurement"]
 
-CV_corr = copy.copy(CV)
-CV_open = myCV_open[0]
-# open_correction = myCV_open[0].C.mean()
-# CV_corr.correct_CV_open(open_correction)
-CV_corr.correct_CV_open(CV_open)
-CV_corr.label = "corrected"
-CV_corr.fmt = "ok"
+myCV = CV_df.loc[freq & mode & ~is_open, "CV_meas"].item()
+myCV_open = CV_df.loc[freq & mode & is_open, "CV_meas"].item()
 
-plot_CV([CV, CV_corr])
+# correct with open measurement
+myCV.correct_CV_open(myCV_open)
+
+# plot CV measurement
+plot_CV([myCV])
+plot_C2V([myCV])
 
 
-# IV
+##### IV
 
 myIV = IV.instantiate_from_HEPHY_HGCAL(f_iv, T=-20.0)
+# change label and fmt
+myIV.label = f"Irradiated 1.4E16, T={myIV.T}C"
+myIV.fmt = "rv"
+
 plot_IV([myIV])
 
 
-# IV inter
+##### IV inter
 
 myIVinter = IVinter.instantiate_from_HEPHY_HGCAL(f_iv_inter, T=-20.0)
 plot_IVinter([myIVinter])
 
-# CVinter
+
+##### CV inter
 myCVinter = CVinter.instantiate_from_HEPHY_HGCAL(f_cvinter, is_open=False)
 myCVinter_open = CVinter.instantiate_from_HEPHY_HGCAL(f_cvinter_open, is_open=True)
 for i in range(3):
