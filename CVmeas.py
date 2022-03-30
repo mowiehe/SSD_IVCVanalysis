@@ -52,7 +52,7 @@ class CVmeas:
     ):
         # initialize with device name, voltage array, capacitance and measurement frequency
         assert type(V) == np.ndarray, "Voltage array as np.ndarray"
-        assert type(C) == np.ndarray, "Voltage array as np.ndarray"
+        assert type(C) == np.ndarray, "Capacitance array as np.ndarray"
         assert type(freq) == float, "Provide measurement frequency as float"
         assert str.lower(mode) == "s" or mode == "p", "mode is s or p?"
         assert type(filename) == str, "Provide filename as str"
