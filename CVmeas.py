@@ -1,10 +1,29 @@
 import numpy as np
 import matplotlib.pyplot as plt
+
+from .parser import HEPHY_HGCAL_parser
 import pdb
 
 
 class CVmeas:
-    all = []
+    all_CV = []
+
+    @classmethod
+    def intantiate_from_HEPHY_HGCAL(cls, filename, device=None, fmt=None, label=None):
+        CV_dict_list = HEPHY_HGCAL_parser.read_CV(filename)
+        return [
+            CVmeas(
+                CV["V"],
+                CV["C"],
+                CV["freq"],
+                CV["mode"],
+                CV["filename"],
+                device=device,
+                fmt=fmt,
+                label=label,
+            )
+            for CV in CV_dict_list
+        ]
 
     def __init__(self, V, C, freq, mode, filename, device=None, fmt=None, label=None):
         # initialize with device name, voltage array, capacitance and measurement frequency
@@ -24,7 +43,7 @@ class CVmeas:
         self.fmt = fmt
         self.label = label if label else f"{self.freq}Hz  {self.mode}"
 
-        CVmeas.all.append(self)
+        CVmeas.all_CV.append(self)
 
     def C2(self):
         return 1 / self.C ** 2

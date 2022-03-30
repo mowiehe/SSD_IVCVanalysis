@@ -1,10 +1,9 @@
 import numpy as np
 import pandas as pd
 import pdb
-from SSD_IVCVanalysis.CVmeas import CVmeas
 
 
-def read_CV(filename, device=None, fmt=None):
+def read_CV(filename):
     # one CV instance per frequency and s- p-mode
     meas_type, header, df_single = parse_measurement_file(filename)
     frequencies = df_single.loc[:, "Freq [Hz]"].drop_duplicates()
@@ -23,16 +22,14 @@ def read_CV(filename, device=None, fmt=None):
                 print("CV mode not understood, p or s")
             V = np.array(df["Nominal Voltage [V]"])
             # R = np.array(df_single["R [Ohm]"])
-            # create CV object
-            CV = CVmeas(
-                V=V,
-                C=C,
-                freq=freq,
-                mode=mode,
-                filename=filename,
-                device=device,
-                fmt=fmt,
-            )
+            # create CV dict
+            CV = {
+                "V": V,
+                "C": C,
+                "freq": freq,
+                "mode": mode,
+                "filename": filename,
+            }
             CV_list.append(CV)
 
     return CV_list
