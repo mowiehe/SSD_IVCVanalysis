@@ -47,6 +47,30 @@ def read_IV(filename):
     return {"V": V, "I": I, "filename": filename}
 
 
+def read_IVinter(filename):
+    # obtains data from dataframe and stores to individual arraysy
+    meas_type, header, df_single = parse_measurement_file(filename)
+    if meas_type != "Interpad R":
+        return -1
+
+    df_red = df_single.loc[
+        :,
+        [
+            "Bias Voltage[V]",
+            "Resistance (polynom fit) [Ohm]",
+            "dR (fit) [Ohm]",
+            "Chi2 of Fit [-]",
+        ],
+    ].drop_duplicates(
+        ignore_index=True
+    )  # reduce dataframe to significant values, drop interpad measurement, keep fit result per bias voltage
+    V = np.array(df_red["Bias Voltage[V]"])
+    R = np.array(df_red["Resistance (polynom fit) [Ohm]"])
+    dR = np.array(df_red["dR (fit) [Ohm]"])
+    Chi2 = np.array(df_red["Chi2 of Fit [-]"])
+    return {"V": V, "R": R, "dR": dR, "Chi2": Chi2, "filename": filename}
+
+
 ## from parse_functions.py in HGCAL_strip_analysis
 def parse_measurement_file(filename):
     # parses a measurement file of arbitrary type from the HGC strip measurements
