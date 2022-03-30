@@ -11,7 +11,7 @@ class IV:
     all_IV = []
 
     @classmethod
-    def intantiate_from_HEPHY_HGCAL(
+    def instantiate_from_HEPHY_HGCAL(
         cls, filename, T, device=None, fmt=None, label=None
     ):
         IV_dict = HEPHY_HGCAL_parser.read_IV(filename)

@@ -11,7 +11,7 @@ class IVinter:
     all_IVinter = []
 
     @classmethod
-    def intantiate_from_HEPHY_HGCAL(
+    def instantiate_from_HEPHY_HGCAL(
         cls, filename, T, device=None, fmt=None, label=None
     ):
         IVinter_dict = HEPHY_HGCAL_parser.read_IVinter(filename)

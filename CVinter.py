@@ -11,7 +11,7 @@ class CVinter:
     all_CVinter = []
 
     @classmethod
-    def intantiate_from_HEPHY_HGCAL(
+    def instantiate_from_HEPHY_HGCAL(
         cls, filename, is_open, device=None, fmt=None, label=None
     ):
         CVinter_dict_list = HEPHY_HGCAL_parser.read_CVinter(filename)
