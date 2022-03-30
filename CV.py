@@ -7,7 +7,7 @@ import utils
 import pdb
 
 
-class CVmeas:
+class CV:
     all_CV = []
 
     @classmethod
@@ -16,18 +16,18 @@ class CVmeas:
     ):
         CV_dict_list = HEPHY_HGCAL_parser.read_CV(filename)
         return [
-            CVmeas(
-                CV["V"],
-                CV["C"],
-                CV["freq"],
-                CV["mode"],
-                CV["filename"],
+            CV(
+                CV_dict["V"],
+                CV_dict["C"],
+                CV_dict["freq"],
+                CV_dict["mode"],
+                CV_dict["filename"],
                 is_open=is_open,
                 device=device,
                 fmt=fmt,
                 label=label,
             )
-            for CV in CV_dict_list
+            for CV_dict in CV_dict_list
         ]
 
     @classmethod
@@ -69,7 +69,7 @@ class CVmeas:
         self.fmt = fmt
         self.label = label if label else f"{self.freq}Hz  {self.mode}"
 
-        CVmeas.all_CV.append(self)
+        CV.all_CV.append(self)
 
     def C2(self):
         return 1 / self.C ** 2
@@ -77,7 +77,7 @@ class CVmeas:
     def correct_CV_open(self, CV_open):
         # CV_open can be a CV_meas object or a float value
         # in case of CV_meas object, freq have to be identical
-        if type(CV_open) == CVmeas:
+        if type(CV_open) == CV:
             if self.freq == CV_open.freq:
                 if all(self.V == CV_open.V):
                     CV_open = CV_open.C

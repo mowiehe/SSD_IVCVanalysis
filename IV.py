@@ -7,7 +7,7 @@ from .parser import HEPHY_HGCAL_parser
 import pdb
 
 
-class IVmeas:
+class IV:
     all_IV = []
 
     @classmethod
@@ -15,7 +15,7 @@ class IVmeas:
         cls, filename, T, device=None, fmt=None, label=None
     ):
         IV_dict = HEPHY_HGCAL_parser.read_IV(filename)
-        IV = IVmeas(
+        return IV(
             IV_dict["V"],
             IV_dict["I"],
             T,
@@ -24,7 +24,6 @@ class IVmeas:
             fmt=fmt,
             label=label,
         )
-        return IV
 
     @classmethod
     def get_DataFrame(cls):
@@ -55,7 +54,7 @@ class IVmeas:
         self.fmt = fmt
         self.label = label if label else f"{self.T}C"
 
-        IVmeas.all_IV.append(self)
+        IV.all_IV.append(self)
 
 
 def plot_IV(meas_list, Iprefix="u", Ilim=[None, None], Vlim=[None, None]):
