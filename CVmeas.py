@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from .parser import HEPHY_HGCAL_parser
+import utils
 import pdb
 
 
@@ -88,15 +89,12 @@ class CVmeas:
         self.C = self.C - CV_open
 
 
-prefix = {"m": 1e3, "u": 1e6, "n": 1e9, "p": 1e12, "k": 1e-3, "M": 1e-6, "": 1}
-
-
 def plot_CV(meas_list, Cprefix="p", Clim=[None, None], Vlim=[None, None]):
     fig, ax = plt.subplots()
 
     for meas in meas_list:
         # change plot scale
-        plotC = meas.C * prefix[Cprefix]
+        plotC = meas.C * utils.prefix[Cprefix]
         # check formatter
         fmt = meas.fmt if meas.fmt else "^"
         ax.plot(meas.V, plotC, fmt, label=meas.label)
@@ -121,7 +119,3 @@ def plot_C2V(meas_list, C2lim=[None, None], Vlim=[None, None]):
     ax.set_ylim(C2lim)
     ax.legend()
     return fig, ax
-
-
-def show_plots():
-    plt.show()
