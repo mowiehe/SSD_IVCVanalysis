@@ -71,6 +71,31 @@ def read_IVinter(filename):
     return {"V": V, "R": R, "dR": dR, "Chi2": Chi2, "filename": filename}
 
 
+def read_CVinter(filename):
+    meas_type, header, df_single = parse_measurement_file(filename)
+    if meas_type != "Interpad C":
+        return -1
+    frequencies = df_single.loc[:, "Frequency [Hz]"].drop_duplicates()
+    CVinter_list = []
+
+    for freq in frequencies:
+        df = df_single.loc[df_single["Frequency [Hz]"] == freq]
+        V = np.array(df["Nominal Voltage [V]"])
+        C = np.array(df["Cp [F]"])
+        dC = np.array(df["Cp_Err [F]"])
+        # R = np.array(df["Rp [Ohm]"])
+        CVinter = {
+            "V": V,
+            "C": C,
+            "dC": dC,
+            "freq": freq,
+            "filename": filename,
+        }
+        CVinter_list.append(CVinter)
+
+    return CVinter_list
+
+
 ## from parse_functions.py in HGCAL_strip_analysis
 def parse_measurement_file(filename):
     # parses a measurement file of arbitrary type from the HGC strip measurements
