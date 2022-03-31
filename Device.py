@@ -92,9 +92,13 @@ class Device:
         df = pd.DataFrame()
 
         for i, measurement in enumerate(self.measurements):
-            meastype = type(measurement).__name__
             single_df = pd.DataFrame(
-                {"Type": meastype, "filename": measurement.filename}, index=[i]
+                {
+                    "Type": measurement.get_Type(),
+                    "filename": measurement.filename,
+                    "Measurement": measurement,
+                },
+                index=[i],
             )
             df = pd.concat([df, single_df])
         return df
