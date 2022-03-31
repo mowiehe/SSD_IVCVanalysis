@@ -48,10 +48,16 @@ class Device:
         )
 
     @classmethod
-    def get_DataFrame(cls):
+    def get_DataFrame(cls, add_columns=[]):
         df = pd.DataFrame()
         for i, dev in enumerate(cls.all_Device):
-            single_df = pd.DataFrame(dev.__dict__, index=[i])
+            default_cols = {
+                "ID": dev.ID,
+                "fluence": dev.fluence,
+                "annealing": dev.annealing,
+            }
+            additional_cols = {key: getattr(dev, key) for key in add_columns}
+            single_df = pd.DataFrame({**default_cols, **additional_cols}, index=[i])
             single_df["Device"] = dev
             df = pd.concat([df, single_df])
         return df
@@ -65,5 +71,19 @@ class Device:
         self.fluence = fluence
         self.annealing = annealing
         self.__dict__.update(kwargs)
+        self.measurements = []
 
         Device.all_Device.append(self)
+
+    def add_measurement(self, measurement):
+        if measurement.device:
+            if measurement.device != self:
+                raise Exception(
+                    "Add measurement to device: Measurement device is different."
+                )
+            else:
+                self.measurements.append(measurement)
+        # set measurement device if not done
+        else:
+            measurement.device = self
+            self.measurements.append(measurement)
