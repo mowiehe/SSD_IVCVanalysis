@@ -3,11 +3,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from .parser import HEPHY_HGCAL_parser
+from .Measurement import Measurement
 from . import utils
 import pdb
 
 
-class CV:
+class CV(Measurement):
     all_CV = []
 
     @classmethod
@@ -50,12 +51,12 @@ class CV:
     def __init__(
         self, V, C, freq, mode, filename, is_open, device=None, fmt=None, label=None
     ):
+        super().__init__(filename, device, fmt, label)
         # initialize with device name, voltage array, capacitance and measurement frequency
         assert type(V) == np.ndarray, "Voltage array as np.ndarray"
         assert type(C) == np.ndarray, "Capacitance array as np.ndarray"
         assert type(freq) == float, "Provide measurement frequency as float"
         assert str.lower(mode) == "s" or mode == "p", "mode is s or p?"
-        assert type(filename) == str, "Provide filename as str"
         assert type(is_open) == bool, "is_open, True or False?"
 
         self.is_negative_V = True if V.mean() < 0 else False
@@ -63,11 +64,8 @@ class CV:
         self.C = C
         self.freq = freq
         self.mode = str.lower(mode)
-        self.filename = filename
         self.is_open = is_open
-        self.device = device
-        self.fmt = fmt
-        self.label = label if label else f"{self.freq}Hz  {self.mode}"
+        self.label = self.label if self.label else f"{self.freq}Hz  {self.mode}"
 
         CV.all_CV.append(self)
 

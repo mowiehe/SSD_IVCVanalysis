@@ -3,11 +3,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from . import utils
+from .Measurement import Measurement
 from .parser import HEPHY_HGCAL_parser
 import pdb
 
 
-class IV:
+class IV(Measurement):
     all_IV = []
 
     @classmethod
@@ -39,20 +40,17 @@ class IV:
         return df
 
     def __init__(self, V, I, T, filename, device=None, fmt=None, label=None):
+        super().__init__(filename, device, fmt, label)
         # initialize with device name, voltage array, capacitance and measurement frequency
         assert type(V) == np.ndarray, "Voltage array as np.ndarray"
         assert type(I) == np.ndarray, "Current array as np.ndarray"
         assert type(T) == float, "Provide measurement temperature (C) as float"
-        assert type(filename) == str, "Provide filename as str"
 
         self.is_negative_V = True if V.mean() < 0 else False
         self.V = V * -1 if self.is_negative_V else V
         self.I = I * -1 if self.is_negative_V else I
         self.T = T
-        self.filename = filename
-        self.device = device
-        self.fmt = fmt
-        self.label = label if label else f"{self.T}C"
+        self.label = self.label if self.label else f"{self.T}C"
 
         IV.all_IV.append(self)
 

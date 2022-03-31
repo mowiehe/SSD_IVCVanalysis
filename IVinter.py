@@ -3,11 +3,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from . import utils
+from .Measurement import Measurement
 from .parser import HEPHY_HGCAL_parser
 import pdb
 
 
-class IVinter:
+class IVinter(Measurement):
     all_IVinter = []
 
     @classmethod
@@ -41,13 +42,13 @@ class IVinter:
         return df
 
     def __init__(self, V, R, dR, Chi2, T, filename, device=None, fmt=None, label=None):
+        super().__init__(filename, device, fmt, label)
         # initialize with device name, voltage array, capacitance and measurement frequency
         assert type(V) == np.ndarray, "Voltage array as np.ndarray"
         assert type(R) == np.ndarray, "Resistance array as np.ndarray"
         assert type(dR) == np.ndarray, "Resistance error array as np.ndarray"
         assert type(Chi2) == np.ndarray, "Chi2 array as np.ndarray"
         assert type(T) == float, "Provide measurement temperature (C) as float"
-        assert type(filename) == str, "Provide filename as str"
 
         self.is_negative_V = True if V.mean() < 0 else False
         self.V = V * -1 if self.is_negative_V else V
@@ -55,10 +56,7 @@ class IVinter:
         self.dR = dR
         self.Chi2 = Chi2
         self.T = T
-        self.filename = filename
-        self.device = device
-        self.fmt = fmt
-        self.label = label if label else f"{self.T}C"
+        self.label = self.label if self.label else f"{self.T}C"
 
         IVinter.all_IVinter.append(self)
 

@@ -4,10 +4,11 @@ import matplotlib.pyplot as plt
 
 from .parser import HEPHY_HGCAL_parser
 from . import utils
+from .Measurement import Measurement
 import pdb
 
 
-class CVinter:
+class CVinter(Measurement):
     all_CVinter = []
 
     @classmethod
@@ -48,12 +49,12 @@ class CVinter:
     def __init__(
         self, V, C, dC, freq, filename, is_open, device=None, fmt=None, label=None
     ):
+        super().__init__(filename, device, fmt, label)
         # initialize with device name, voltage array, capacitance and measurement frequency
         assert type(V) == np.ndarray, "Voltage array as np.ndarray"
         assert type(C) == np.ndarray, "Capacitance array as np.ndarray"
         assert type(dC) == np.ndarray, "Capacitance error array as np.ndarray"
         assert type(freq) == float, "Provide measurement frequency as float"
-        assert type(filename) == str, "Provide filename as str"
         assert type(is_open) == bool, "is_open, True or False?"
 
         self.is_negative_V = True if V.mean() < 0 else False
@@ -61,11 +62,8 @@ class CVinter:
         self.C = C
         self.dC = dC
         self.freq = freq
-        self.filename = filename
         self.is_open = is_open
-        self.device = device
-        self.fmt = fmt
-        self.label = label if label else f"{self.freq}Hz"
+        self.label = self.label if self.label else f"{self.freq}Hz"
 
         CVinter.all_CVinter.append(self)
 
