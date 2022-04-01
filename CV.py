@@ -65,7 +65,7 @@ class CV(Measurement):
         self.freq = freq
         self.mode = str.lower(mode)
         self.is_open = is_open
-        self.label = self.label if self.label else f"{self.freq}Hz  {self.mode}"
+        self.label = self.label if self.label else f"{self.freq/1000}kHz  {self.mode}"
 
         CV.all_CV.append(self)
 

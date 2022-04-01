@@ -63,7 +63,7 @@ class CVinter(Measurement):
         self.dC = dC
         self.freq = freq
         self.is_open = is_open
-        self.label = self.label if self.label else f"{self.freq}Hz"
+        self.label = self.label if self.label else f"{self.freq/1000}kHz"
 
         CVinter.all_CVinter.append(self)
 
