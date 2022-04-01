@@ -56,7 +56,7 @@ class IV(Measurement):
 
 
 def plot_IV(meas_list, Iprefix="u", Ilim=[None, None], Vlim=[None, None]):
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=[8, 6])
 
     for meas in meas_list:
         # change plot scale
@@ -68,5 +68,6 @@ def plot_IV(meas_list, Iprefix="u", Ilim=[None, None], Vlim=[None, None]):
     ax.set_ylabel(f"Leakage current [{Iprefix}A]")
     ax.set_xlim(Vlim)
     ax.set_ylim(Ilim)
+    ax.grid(True)
     ax.legend()
     return fig, ax

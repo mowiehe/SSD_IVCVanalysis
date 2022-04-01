@@ -88,7 +88,7 @@ class CV(Measurement):
 
 
 def plot_CV(meas_list, Cprefix="p", Clim=[None, None], Vlim=[None, None]):
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=[8, 6])
 
     for meas in meas_list:
         # change plot scale
@@ -100,12 +100,13 @@ def plot_CV(meas_list, Cprefix="p", Clim=[None, None], Vlim=[None, None]):
     ax.set_ylabel(f"Capacitance [{Cprefix}F]")
     ax.set_xlim(Vlim)
     ax.set_ylim(Clim)
+    ax.grid(True)
     ax.legend()
     return fig, ax
 
 
 def plot_C2V(meas_list, C2lim=[None, None], Vlim=[None, None]):
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=[8, 6])
 
     for meas in meas_list:
         # check formatter
@@ -115,5 +116,6 @@ def plot_C2V(meas_list, C2lim=[None, None], Vlim=[None, None]):
     ax.set_ylabel(f"$1 / C^2$ [$1/F^2$]")
     ax.set_xlim(Vlim)
     ax.set_ylim(C2lim)
+    ax.grid(True)
     ax.legend()
     return fig, ax

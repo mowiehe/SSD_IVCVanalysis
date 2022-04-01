@@ -83,7 +83,7 @@ class CVinter(Measurement):
 
 
 def plot_CVinter(meas_list, Cprefix="p", Clim=[None, None], Vlim=[None, None]):
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=[8, 6])
 
     for meas in meas_list:
         # change plot scale
@@ -95,5 +95,6 @@ def plot_CVinter(meas_list, Cprefix="p", Clim=[None, None], Vlim=[None, None]):
     ax.set_ylabel(f"Interpad capacitance [{Cprefix}F]")
     ax.set_xlim(Vlim)
     ax.set_ylim(Clim)
+    ax.grid(True)
     ax.legend()
     return fig, ax

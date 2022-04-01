@@ -62,7 +62,7 @@ class IVinter(Measurement):
 
 
 def plot_IVinter(meas_list, Rprefix="M", Rlim=[None, None], Vlim=[None, None]):
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=[8, 6])
 
     for meas in meas_list:
         # change plot scale
@@ -74,5 +74,6 @@ def plot_IVinter(meas_list, Rprefix="M", Rlim=[None, None], Vlim=[None, None]):
     ax.set_ylabel(f"Interpad resistance [{Rprefix}Ohm]")
     ax.set_xlim(Vlim)
     ax.set_ylim(Rlim)
+    ax.grid(True)
     ax.legend()
     return fig, ax
