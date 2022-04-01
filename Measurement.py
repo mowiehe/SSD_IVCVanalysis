@@ -9,10 +9,9 @@ class Measurement:
         self.fmt = fmt
         self.label = label
 
+        self.Type = type(self).__name__
+
         if device:
             device.add_measurement(self)
 
         Measurement.all_Measurement.append(self)
-
-    def get_Type(self):
-        return type(self).__name__
