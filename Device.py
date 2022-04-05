@@ -16,6 +16,7 @@ class Device:
         fluence="fluence",
         annealing="annealing",
     ):
+        new_Devices = []
         # read csv_file
         dev_info = pd.read_csv(csv_file, sep=sep, dtype="object", comment=comment)
         # fluence and annealing can be specified as float/int of by giving the column name
@@ -31,8 +32,8 @@ class Device:
             annealing_column = annealing
 
         # instantiate one device object per row. ID, fluence and annealing are set explicitly, all other keywords are passed as kwargs
-        dev_info.apply(
-            lambda x: Device(
+        def inst_Device_from_dev_info(x):
+            dev = Device(
                 ID=x[ID_column],
                 fluence=x[fluence_column],
                 annealing=x[annealing_column],
@@ -43,24 +44,47 @@ class Device:
                         | (x.keys() == annealing_column)
                     ),
                 ].to_dict(),
-            ),
+            )
+            new_Devices.append(dev)
+            return dev
+
+        dev_info.apply(
+            inst_Device_from_dev_info,
             axis=1,
         )
+        return new_Devices
 
     @classmethod
-    def get_DataFrame(cls, add_columns=[]):
+    def get_DataFrame(cls, device_list=None, add_columns=[]):
+        if not device_list:
+            device_list = cls.all_Device
         df = pd.DataFrame()
-        for i, dev in enumerate(cls.all_Device):
+        for i, dev in enumerate(device_list):
             default_cols = {
                 "ID": dev.ID,
                 "fluence": dev.fluence,
                 "annealing": dev.annealing,
             }
             additional_cols = {key: getattr(dev, key) for key in add_columns}
-            single_df = pd.DataFrame({**default_cols, **additional_cols}, index=[i])
+            single_df = pd.Series({**default_cols, **additional_cols})
             single_df["Device"] = dev
-            df = pd.concat([df, single_df])
+            df = df.append(single_df, ignore_index=True)
         return df
+
+    @classmethod
+    def get_Device(cls, ID, fluence=0, annealing=0):
+        dev_list = [dev for dev in cls.all_Device if dev.ID == ID]
+        if (
+            len(dev_list) > 1
+        ):  # select fluence and annealing if device ID not unambiguous
+            dev_list = [
+                dev
+                for dev in dev_list
+                if dev.fluence == fluence and dev.annealing == annealing
+            ]
+        if len(dev_list) != 1:
+            raise Exception("Device ID is ambiguous, specify fluence and annealing")
+        return dev_list[0]
 
     def __init__(self, ID, fluence, annealing, **kwargs):
         assert type(ID) == str, "Device ID as string"
