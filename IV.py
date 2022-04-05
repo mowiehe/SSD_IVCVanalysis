@@ -55,7 +55,9 @@ class IV(Measurement):
         IV.all_IV.append(self)
 
 
-def plot_IV(meas_list, Iprefix="u", Ilim=[None, None], Vlim=[None, None]):
+def plot_IV(meas_list, Iprefix="u", Ilim=[None, None], Vlim=[None, None], scale="log"):
+    if scale == "log" and Ilim[0] == None:
+        Ilim[0] = 1
     fig, ax = plt.subplots(figsize=[8, 6])
 
     for meas in meas_list:
@@ -68,6 +70,7 @@ def plot_IV(meas_list, Iprefix="u", Ilim=[None, None], Vlim=[None, None]):
     ax.set_ylabel(f"Leakage current [{Iprefix}A]")
     ax.set_xlim(Vlim)
     ax.set_ylim(Ilim)
+    ax.set_yscale(scale)
     ax.grid(True)
     ax.legend()
     return fig, ax
