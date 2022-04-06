@@ -44,7 +44,7 @@ class CVinter(Measurement):
         self.is_open = is_open
         self.label = self.label if self.label else f"{self.freq/1000}kHz"
 
-        self.corrected = False
+        self.is_corrected = False
 
         CVinter.all_CVinter.append(self)
 
@@ -61,7 +61,7 @@ class CVinter(Measurement):
                 print("Frequencies differ for CVinter open correction", self.filename)
                 CVinter_open = np.nan
         self.C = self.C - CVinter_open
-        self.corrected = True
+        self.is_corrected = True
 
 
 def plot_CVinter(meas_list, Cprefix="p", Clim=[None, None], Vlim=[None, None]):

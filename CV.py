@@ -46,7 +46,7 @@ class CV(Measurement):
         self.is_open = is_open
         self.label = self.label if self.label else f"{self.freq/1000}kHz  {self.mode}"
 
-        self.corrected = False
+        self.is_corrected = False
 
         CV.all_CV.append(self)
 
@@ -66,7 +66,7 @@ class CV(Measurement):
                 print("Frequencies differ for CV open correction", self.filename)
                 CV_open = np.nan
         self.C = self.C - CV_open
-        self.corrected = True
+        self.is_corrected = True
 
 
 def plot_CV(meas_list, Cprefix="p", Clim=[None, None], Vlim=[None, None]):
