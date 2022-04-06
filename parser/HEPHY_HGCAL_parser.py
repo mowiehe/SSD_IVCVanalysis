@@ -125,14 +125,78 @@ def parse_measurement_file(filename):
 def instantiate_measurement(filename, T, is_open, device=None, fmt=None, label=None):
     meas_type, _, _ = parse_measurement_file(filename)
     if meas_type == "Single IV":
-        meas = IV.instantiate_from_HEPHY_HGCAL(filename, T, device, fmt, label)
+        meas = instantiate_IV(filename, T, device, fmt, label)
     if meas_type == "Single CV":
-        meas = CV.instantiate_from_HEPHY_HGCAL(filename, is_open, device, fmt, label)
+        meas = instantiate_CV(filename, is_open, device, fmt, label)
     if meas_type == "Interpad R":
-        meas = IVinter.instantiate_from_HEPHY_HGCAL(filename, T, device, fmt, label)
+        meas = instantiate_IVinter(filename, T, device, fmt, label)
     if meas_type == "Interpad C":
-        meas = CVinter.instantiate_from_HEPHY_HGCAL(
-            filename, is_open, device, fmt, label
-        )
+        meas = instantiate_CVinter(filename, is_open, device, fmt, label)
 
     return meas
+
+
+def instantiate_IV(filename, T, device=None, fmt=None, label=None):
+    IV_dict = read_IV(filename)
+    return IV(
+        IV_dict["V"],
+        IV_dict["I"],
+        IV_dict["filename"],
+        T,
+        device=device,
+        fmt=fmt,
+        label=label,
+    )
+
+
+def instantiate_IVinter(filename, T, device=None, fmt=None, label=None):
+    IVinter_dict = read_IVinter(filename)
+    return IVinter(
+        IVinter_dict["V"],
+        IVinter_dict["R"],
+        IVinter_dict["dR"],
+        IVinter_dict["Chi2"],
+        IVinter_dict["filename"],
+        T,
+        device=device,
+        fmt=fmt,
+        label=label,
+    )
+
+
+def instantiate_CV(filename, T, is_open, device=None, fmt=None, label=None):
+    CV_dict_list = read_CV(filename)
+    return [
+        CV(
+            CV_dict["V"],
+            CV_dict["C"],
+            CV_dict["freq"],
+            CV_dict["mode"],
+            CV_dict["filename"],
+            T,
+            is_open=is_open,
+            device=device,
+            fmt=fmt,
+            label=label,
+        )
+        for CV_dict in CV_dict_list
+    ]
+
+
+def instantiate_CVinter(filename, T, is_open, device=None, fmt=None, label=None):
+    CVinter_dict_list = read_CVinter(filename)
+    return [
+        CVinter(
+            CVinter_dict["V"],
+            CVinter_dict["C"],
+            CVinter_dict["dC"],
+            CVinter_dict["freq"],
+            CVinter_dict["filename"],
+            T,
+            is_open=is_open,
+            device=device,
+            fmt=fmt,
+            label=label,
+        )
+        for CVinter_dict in CVinter_dict_list
+    ]

@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-from .parser import HEPHY_HGCAL_parser
 from . import utils
 from .Measurement import Measurement
 import pdb
@@ -10,27 +9,6 @@ import pdb
 
 class CVinter(Measurement):
     all_CVinter = []
-
-    @classmethod
-    def instantiate_from_HEPHY_HGCAL(
-        cls, filename, T, is_open, device=None, fmt=None, label=None
-    ):
-        CVinter_dict_list = HEPHY_HGCAL_parser.read_CVinter(filename)
-        return [
-            CVinter(
-                CVinter_dict["V"],
-                CVinter_dict["C"],
-                CVinter_dict["dC"],
-                CVinter_dict["freq"],
-                CVinter_dict["filename"],
-                T,
-                is_open=is_open,
-                device=device,
-                fmt=fmt,
-                label=label,
-            )
-            for CVinter_dict in CVinter_dict_list
-        ]
 
     @classmethod
     def get_DataFrame(cls):

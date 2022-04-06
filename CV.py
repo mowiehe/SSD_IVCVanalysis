@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-from .parser import HEPHY_HGCAL_parser
 from .Measurement import Measurement
 from . import utils
 import pdb
@@ -10,27 +9,6 @@ import pdb
 
 class CV(Measurement):
     all_CV = []
-
-    @classmethod
-    def instantiate_from_HEPHY_HGCAL(
-        cls, filename, T, is_open, device=None, fmt=None, label=None
-    ):
-        CV_dict_list = HEPHY_HGCAL_parser.read_CV(filename)
-        return [
-            CV(
-                CV_dict["V"],
-                CV_dict["C"],
-                CV_dict["freq"],
-                CV_dict["mode"],
-                CV_dict["filename"],
-                T,
-                is_open=is_open,
-                device=device,
-                fmt=fmt,
-                label=label,
-            )
-            for CV_dict in CV_dict_list
-        ]
 
     @classmethod
     def get_DataFrame(cls):

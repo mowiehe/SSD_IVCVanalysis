@@ -4,29 +4,11 @@ import matplotlib.pyplot as plt
 
 from . import utils
 from .Measurement import Measurement
-from .parser import HEPHY_HGCAL_parser
 import pdb
 
 
 class IVinter(Measurement):
     all_IVinter = []
-
-    @classmethod
-    def instantiate_from_HEPHY_HGCAL(
-        cls, filename, T, device=None, fmt=None, label=None
-    ):
-        IVinter_dict = HEPHY_HGCAL_parser.read_IVinter(filename)
-        return IVinter(
-            IVinter_dict["V"],
-            IVinter_dict["R"],
-            IVinter_dict["dR"],
-            IVinter_dict["Chi2"],
-            IVinter_dict["filename"],
-            T,
-            device=device,
-            fmt=fmt,
-            label=label,
-        )
 
     @classmethod
     def get_DataFrame(cls):

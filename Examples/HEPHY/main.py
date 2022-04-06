@@ -1,13 +1,12 @@
 import os
 
-from SSD_IVCVanalysis.parser.HEPHY_HGCAL_parser import instantiate_measurement
+import SSD_IVCVanalysis.parser.HEPHY_HGCAL_parser as parser
 
-from SSD_IVCVanalysis.CV import CV, plot_CV, plot_C2V
-from SSD_IVCVanalysis.IV import IV, plot_IV
-from SSD_IVCVanalysis.IVinter import IVinter, plot_IVinter
-from SSD_IVCVanalysis.CVinter import CVinter, plot_CVinter
-from SSD_IVCVanalysis.utils import show_plots
-import copy
+import SSD_IVCVanalysis.CV as CV
+import SSD_IVCVanalysis.IV as IV
+import SSD_IVCVanalysis.IVinter as IVinter
+import SSD_IVCVanalysis.CVinter as CVinter
+import SSD_IVCVanalysis.utils as utils
 import pdb
 
 script_path = os.path.dirname(os.path.realpath(__file__))  # scripts directory
@@ -25,11 +24,11 @@ f_cvinter_open = (
 
 ##### CV
 # Instantiate CV measurements
-myCV_list = CV.instantiate_from_HEPHY_HGCAL(f_cv, T=-20, is_open=False)
-myCV_open_list = CV.instantiate_from_HEPHY_HGCAL(f_cv_open, T=-20, is_open=True)
+myCV_list = parser.instantiate_CV(f_cv, T=-20, is_open=False)
+myCV_open_list = parser.instantiate_CV(f_cv_open, T=-20, is_open=True)
 
 # Get data frame of all measurements
-CV_df = CV.get_DataFrame()
+CV_df = CV.CV.get_DataFrame()
 
 # select CV mode and frequency
 freq = CV_df["Frequency [Hz]"] == 10e3
@@ -43,35 +42,35 @@ myCV_open = CV_df.loc[freq & mode & is_open, "CV_meas"].item()
 myCV.correct_CV_open(myCV_open)
 
 # plot CV measurement
-plot_CV([myCV])
-plot_C2V([myCV])
+CV.plot_CV([myCV])
+CV.plot_C2V([myCV])
 
 
 ##### IV
 
-myIV = IV.instantiate_from_HEPHY_HGCAL(f_iv, T=-20.0)
+myIV = parser.instantiate_IV(f_iv, T=-20.0)
+
 # files can also be parsed without knowing the measurement type
-mymeas = instantiate_measurement(f_iv, is_open=False, T=-20.0)
+mymeas = parser.instantiate_measurement(f_iv, is_open=False, T=-20.0)
+
 # change label and fmt
 myIV.label = f"Irradiated 1.4E16, T={myIV.T}C"
 myIV.fmt = "rv"
 
-plot_IV([myIV])
+IV.plot_IV([myIV])
 
 
 ##### IV inter
 
-myIVinter = IVinter.instantiate_from_HEPHY_HGCAL(f_iv_inter, T=-20.0)
-plot_IVinter([myIVinter])
+myIVinter = parser.instantiate_IVinter(f_iv_inter, T=-20.0)
+IVinter.plot_IVinter([myIVinter])
 
 
 ##### CV inter
-myCVinter = CVinter.instantiate_from_HEPHY_HGCAL(f_cvinter, T=-20, is_open=False)
-myCVinter_open = CVinter.instantiate_from_HEPHY_HGCAL(
-    f_cvinter_open, T=-20, is_open=True
-)
+myCVinter = parser.instantiate_CVinter(f_cvinter, T=-20, is_open=False)
+myCVinter_open = parser.instantiate_CVinter(f_cvinter_open, T=-20, is_open=True)
 for i in range(3):
     myCVinter[i].correct_CVinter_open(myCVinter_open[i])
-plot_CVinter([myCVinter[0], myCVinter[1], myCVinter[2]])
+CVinter.plot_CVinter([myCVinter[0], myCVinter[1], myCVinter[2]])
 
-show_plots()
+utils.show_plots()

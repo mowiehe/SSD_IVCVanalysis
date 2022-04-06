@@ -4,27 +4,11 @@ import matplotlib.pyplot as plt
 
 from . import utils
 from .Measurement import Measurement
-from .parser import HEPHY_HGCAL_parser
 import pdb
 
 
 class IV(Measurement):
     all_IV = []
-
-    @classmethod
-    def instantiate_from_HEPHY_HGCAL(
-        cls, filename, T, device=None, fmt=None, label=None
-    ):
-        IV_dict = HEPHY_HGCAL_parser.read_IV(filename)
-        return IV(
-            IV_dict["V"],
-            IV_dict["I"],
-            IV_dict["filename"],
-            T,
-            device=device,
-            fmt=fmt,
-            label=label,
-        )
 
     @classmethod
     def get_DataFrame(cls):
