@@ -57,11 +57,11 @@ class CVinter(Measurement):
                     CVinter_open = CVinter_open.C
                 else:  # take the mean value if different voltages
                     CVinter_open = CVinter_open.C.mean()
+                self.C = self.C - CVinter_open
+                self.is_corrected = True
+
             else:
                 print("Frequencies differ for CVinter open correction", self.filename)
-                CVinter_open = np.nan
-        self.C = self.C - CVinter_open
-        self.is_corrected = True
 
 
 def plot_CVinter(meas_list, Cprefix="p", Clim=[None, None], Vlim=[None, None]):

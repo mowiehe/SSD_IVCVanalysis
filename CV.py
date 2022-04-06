@@ -62,11 +62,11 @@ class CV(Measurement):
                     CV_open = CV_open.C
                 else:  # take the mean value if different voltages
                     CV_open = CV_open.C.mean()
+                self.C = self.C - CV_open
+                self.is_corrected = True
+
             else:
                 print("Frequencies differ for CV open correction", self.filename)
-                CV_open = np.nan
-        self.C = self.C - CV_open
-        self.is_corrected = True
 
 
 def plot_CV(meas_list, Cprefix="p", Clim=[None, None], Vlim=[None, None]):
