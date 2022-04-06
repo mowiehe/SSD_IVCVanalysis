@@ -13,7 +13,7 @@ class CV(Measurement):
 
     @classmethod
     def instantiate_from_HEPHY_HGCAL(
-        cls, filename, is_open, device=None, fmt=None, label=None
+        cls, filename, T, is_open, device=None, fmt=None, label=None
     ):
         CV_dict_list = HEPHY_HGCAL_parser.read_CV(filename)
         return [
@@ -23,6 +23,7 @@ class CV(Measurement):
                 CV_dict["freq"],
                 CV_dict["mode"],
                 CV_dict["filename"],
+                T,
                 is_open=is_open,
                 device=device,
                 fmt=fmt,
@@ -49,9 +50,9 @@ class CV(Measurement):
         return df
 
     def __init__(
-        self, V, C, freq, mode, filename, is_open, device=None, fmt=None, label=None
+        self, V, C, freq, mode, filename, T, is_open, device=None, fmt=None, label=None
     ):
-        super().__init__(filename, device, fmt, label)
+        super().__init__(filename, T, device, fmt, label)
         # initialize with device name, voltage array, capacitance and measurement frequency
         assert type(V) == np.ndarray, "Voltage array as np.ndarray"
         assert type(C) == np.ndarray, "Capacitance array as np.ndarray"

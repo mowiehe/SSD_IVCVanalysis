@@ -13,7 +13,7 @@ class CVinter(Measurement):
 
     @classmethod
     def instantiate_from_HEPHY_HGCAL(
-        cls, filename, is_open, device=None, fmt=None, label=None
+        cls, filename, T, is_open, device=None, fmt=None, label=None
     ):
         CVinter_dict_list = HEPHY_HGCAL_parser.read_CVinter(filename)
         return [
@@ -23,6 +23,7 @@ class CVinter(Measurement):
                 CVinter_dict["dC"],
                 CVinter_dict["freq"],
                 CVinter_dict["filename"],
+                T,
                 is_open=is_open,
                 device=device,
                 fmt=fmt,
@@ -47,9 +48,9 @@ class CVinter(Measurement):
         return df
 
     def __init__(
-        self, V, C, dC, freq, filename, is_open, device=None, fmt=None, label=None
+        self, V, C, dC, freq, filename, T, is_open, device=None, fmt=None, label=None
     ):
-        super().__init__(filename, device, fmt, label)
+        super().__init__(filename, T, device, fmt, label)
         # initialize with device name, voltage array, capacitance and measurement frequency
         assert type(V) == np.ndarray, "Voltage array as np.ndarray"
         assert type(C) == np.ndarray, "Capacitance array as np.ndarray"

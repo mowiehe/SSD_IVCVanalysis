@@ -19,8 +19,8 @@ class IV(Measurement):
         return IV(
             IV_dict["V"],
             IV_dict["I"],
-            T,
             IV_dict["filename"],
+            T,
             device=device,
             fmt=fmt,
             label=label,
@@ -39,8 +39,8 @@ class IV(Measurement):
         )
         return df
 
-    def __init__(self, V, I, T, filename, device=None, fmt=None, label=None):
-        super().__init__(filename, device, fmt, label)
+    def __init__(self, V, I, filename, T, device=None, fmt=None, label=None):
+        super().__init__(filename, T, device, fmt, label)
         # initialize with device name, voltage array, capacitance and measurement frequency
         assert type(V) == np.ndarray, "Voltage array as np.ndarray"
         assert type(I) == np.ndarray, "Current array as np.ndarray"
@@ -49,7 +49,6 @@ class IV(Measurement):
         self.is_negative_V = True if V.mean() < 0 else False
         self.V = V * -1 if self.is_negative_V else V
         self.I = I * -1 if self.is_negative_V else I
-        self.T = T
         self.label = self.label if self.label else f"{self.T}C"
 
         IV.all_IV.append(self)

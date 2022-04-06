@@ -21,8 +21,8 @@ class IVinter(Measurement):
             IVinter_dict["R"],
             IVinter_dict["dR"],
             IVinter_dict["Chi2"],
-            T,
             IVinter_dict["filename"],
+            T,
             device=device,
             fmt=fmt,
             label=label,
@@ -41,8 +41,8 @@ class IVinter(Measurement):
         )
         return df
 
-    def __init__(self, V, R, dR, Chi2, T, filename, device=None, fmt=None, label=None):
-        super().__init__(filename, device, fmt, label)
+    def __init__(self, V, R, dR, Chi2, filename, T, device=None, fmt=None, label=None):
+        super().__init__(filename, T, device, fmt, label)
         # initialize with device name, voltage array, capacitance and measurement frequency
         assert type(V) == np.ndarray, "Voltage array as np.ndarray"
         assert type(R) == np.ndarray, "Resistance array as np.ndarray"
@@ -55,7 +55,6 @@ class IVinter(Measurement):
         self.R = R
         self.dR = dR
         self.Chi2 = Chi2
-        self.T = T
         self.label = self.label if self.label else f"{self.T}C"
 
         IVinter.all_IVinter.append(self)

@@ -25,8 +25,8 @@ f_cvinter_open = (
 
 ##### CV
 # Instantiate CV measurements
-myCV_list = CV.instantiate_from_HEPHY_HGCAL(f_cv, is_open=False)
-myCV_open_list = CV.instantiate_from_HEPHY_HGCAL(f_cv_open, is_open=True)
+myCV_list = CV.instantiate_from_HEPHY_HGCAL(f_cv, T=-20, is_open=False)
+myCV_open_list = CV.instantiate_from_HEPHY_HGCAL(f_cv_open, T=-20, is_open=True)
 
 # Get data frame of all measurements
 CV_df = CV.get_DataFrame()
@@ -66,8 +66,10 @@ plot_IVinter([myIVinter])
 
 
 ##### CV inter
-myCVinter = CVinter.instantiate_from_HEPHY_HGCAL(f_cvinter, is_open=False)
-myCVinter_open = CVinter.instantiate_from_HEPHY_HGCAL(f_cvinter_open, is_open=True)
+myCVinter = CVinter.instantiate_from_HEPHY_HGCAL(f_cvinter, T=-20, is_open=False)
+myCVinter_open = CVinter.instantiate_from_HEPHY_HGCAL(
+    f_cvinter_open, T=-20, is_open=True
+)
 for i in range(3):
     myCVinter[i].correct_CVinter_open(myCVinter_open[i])
 plot_CVinter([myCVinter[0], myCVinter[1], myCVinter[2]])
