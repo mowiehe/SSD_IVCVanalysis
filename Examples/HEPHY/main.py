@@ -1,5 +1,7 @@
 import os
 
+from SSD_IVCVanalysis.parser.HEPHY_HGCAL_parser import instantiate_measurement
+
 from SSD_IVCVanalysis.CV import CV, plot_CV, plot_C2V
 from SSD_IVCVanalysis.IV import IV, plot_IV
 from SSD_IVCVanalysis.IVinter import IVinter, plot_IVinter
@@ -48,6 +50,8 @@ plot_C2V([myCV])
 ##### IV
 
 myIV = IV.instantiate_from_HEPHY_HGCAL(f_iv, T=-20.0)
+# files can also be parsed without knowing the measurement type
+mymeas = instantiate_measurement(f_iv, is_open=False, T=-20.0)
 # change label and fmt
 myIV.label = f"Irradiated 1.4E16, T={myIV.T}C"
 myIV.fmt = "rv"

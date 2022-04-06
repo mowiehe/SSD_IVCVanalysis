@@ -2,6 +2,11 @@ import numpy as np
 import pandas as pd
 import pdb
 
+from SSD_IVCVanalysis.IV import IV
+from SSD_IVCVanalysis.CV import CV
+from SSD_IVCVanalysis.IVinter import IVinter
+from SSD_IVCVanalysis.CVinter import CVinter
+
 
 def read_CV(filename):
     # one CV instance per frequency and s- p-mode
@@ -115,3 +120,19 @@ def parse_measurement_file(filename):
     df_single = pd.read_csv(filename, comment="#", delimiter="\t", names=columns)
 
     return meas_type, header, df_single
+
+
+def instantiate_measurement(filename, T, is_open, device=None, fmt=None, label=None):
+    meas_type, _, _ = parse_measurement_file(filename)
+    if meas_type == "Single IV":
+        meas = IV.instantiate_from_HEPHY_HGCAL(filename, T, device, fmt, label)
+    if meas_type == "Single CV":
+        meas = CV.instantiate_from_HEPHY_HGCAL(filename, is_open, device, fmt, label)
+    if meas_type == "Interpad R":
+        meas = IVinter.instantiate_from_HEPHY_HGCAL(filename, T, device, fmt, label)
+    if meas_type == "Interpad C":
+        meas = CVinter.instantiate_from_HEPHY_HGCAL(
+            filename, is_open, device, fmt, label
+        )
+
+    return meas
