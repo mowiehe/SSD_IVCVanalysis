@@ -25,11 +25,13 @@ class Device:
             dev_info[fluence_column] = fluence
         else:
             fluence_column = fluence
+            dev_info[fluence_column] = dev_info[fluence_column].astype(float)
         if type(annealing) == int:
             annealing_column = "annealing"
             dev_info[annealing_column] = annealing
         else:
             annealing_column = annealing
+            dev_info[annealing_column] = dev_info[annealing_column].astype(int)
 
         # instantiate one device object per row. ID, fluence and annealing are set explicitly, all other keywords are passed as kwargs
         def inst_Device_from_dev_info(x):
