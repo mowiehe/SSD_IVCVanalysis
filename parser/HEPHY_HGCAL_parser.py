@@ -122,16 +122,18 @@ def parse_measurement_file(filename):
     return meas_type, header, df_single
 
 
-def instantiate_measurement(filename, T, is_open, device=None, fmt=None, label=None):
+def instantiate_measurement(
+    filename, T, is_open=None, device=None, fmt=None, label=None
+):
     meas_type, _, _ = parse_measurement_file(filename)
     if meas_type == "Single IV":
         meas = instantiate_IV(filename, T, device, fmt, label)
     if meas_type == "Single CV":
-        meas = instantiate_CV(filename, is_open, device, fmt, label)
+        meas = instantiate_CV(filename, T, is_open, device, fmt, label)
     if meas_type == "Interpad R":
         meas = instantiate_IVinter(filename, T, device, fmt, label)
     if meas_type == "Interpad C":
-        meas = instantiate_CVinter(filename, is_open, device, fmt, label)
+        meas = instantiate_CVinter(filename, T, is_open, device, fmt, label)
 
     return meas
 
