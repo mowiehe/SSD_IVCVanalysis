@@ -64,7 +64,9 @@ class CVinter(Measurement):
                 print("Frequencies differ for CVinter open correction", self.filename)
 
 
-def plot_CVinter(meas_list, Cprefix="p", Clim=[None, None], Vlim=[None, None]):
+def plot_CVinter(
+    meas_list, Cprefix="p", Clim=[None, None], Vlim=[None, None], **kwargs
+):
     fig, ax = plt.subplots(figsize=[8, 6])
 
     for meas in meas_list:
@@ -72,7 +74,7 @@ def plot_CVinter(meas_list, Cprefix="p", Clim=[None, None], Vlim=[None, None]):
         plotC = meas.C * utils.prefix[Cprefix]
         # check formatter
         fmt = meas.fmt if meas.fmt else "^"
-        ax.plot(meas.V, plotC, fmt, label=meas.label)
+        ax.plot(meas.V, plotC, fmt, label=meas.label, **kwargs)
     ax.set_xlabel("Bias voltage [V]")
     ax.set_ylabel(f"Interpad capacitance [{Cprefix}F]")
     ax.set_xlim(Vlim)

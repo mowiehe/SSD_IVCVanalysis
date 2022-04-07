@@ -69,7 +69,7 @@ class CV(Measurement):
                 print("Frequencies differ for CV open correction", self.filename)
 
 
-def plot_CV(meas_list, Cprefix="p", Clim=[None, None], Vlim=[None, None]):
+def plot_CV(meas_list, Cprefix="p", Clim=[None, None], Vlim=[None, None], **kwargs):
     fig, ax = plt.subplots(figsize=[8, 6])
 
     for meas in meas_list:
@@ -77,7 +77,7 @@ def plot_CV(meas_list, Cprefix="p", Clim=[None, None], Vlim=[None, None]):
         plotC = meas.C * utils.prefix[Cprefix]
         # check formatter
         fmt = meas.fmt if meas.fmt else "^"
-        ax.plot(meas.V, plotC, fmt, label=meas.label)
+        ax.plot(meas.V, plotC, fmt, label=meas.label, **kwargs)
     ax.set_xlabel("Bias voltage [V]")
     ax.set_ylabel(f"Capacitance [{Cprefix}F]")
     ax.set_xlim(Vlim)
@@ -87,13 +87,13 @@ def plot_CV(meas_list, Cprefix="p", Clim=[None, None], Vlim=[None, None]):
     return fig, ax
 
 
-def plot_C2V(meas_list, C2lim=[None, None], Vlim=[None, None]):
+def plot_C2V(meas_list, C2lim=[None, None], Vlim=[None, None], **kwargs):
     fig, ax = plt.subplots(figsize=[8, 6])
 
     for meas in meas_list:
         # check formatter
         fmt = meas.fmt if meas.fmt else "^"
-        ax.plot(meas.V, meas.C2(), fmt, label=meas.label)
+        ax.plot(meas.V, meas.C2(), fmt, label=meas.label, **kwargs)
     ax.set_xlabel("Bias voltage [V]")
     ax.set_ylabel(f"$1 / C^2$ [$1/F^2$]")
     ax.set_xlim(Vlim)

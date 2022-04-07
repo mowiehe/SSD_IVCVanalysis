@@ -38,7 +38,9 @@ class IV(Measurement):
         IV.all_IV.append(self)
 
 
-def plot_IV(meas_list, Iprefix="u", Ilim=[None, None], Vlim=[None, None], scale="log"):
+def plot_IV(
+    meas_list, Iprefix="u", Ilim=[None, None], Vlim=[None, None], scale="log", **kwargs
+):
     if scale == "log" and Ilim[0] == None:
         Ilim[0] = 1
     fig, ax = plt.subplots(figsize=[8, 6])
@@ -48,7 +50,7 @@ def plot_IV(meas_list, Iprefix="u", Ilim=[None, None], Vlim=[None, None], scale=
         plotI = meas.I * utils.prefix[Iprefix]
         # check formatter
         fmt = meas.fmt if meas.fmt else "^"
-        ax.plot(meas.V, plotI, fmt, label=meas.label)
+        ax.plot(meas.V, plotI, fmt, label=meas.label, **kwargs)
     ax.set_xlabel("Bias voltage [V]")
     ax.set_ylabel(f"Leakage current [{Iprefix}A]")
     ax.set_xlim(Vlim)

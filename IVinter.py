@@ -42,7 +42,9 @@ class IVinter(Measurement):
         IVinter.all_IVinter.append(self)
 
 
-def plot_IVinter(meas_list, Rprefix="M", Rlim=[None, None], Vlim=[None, None]):
+def plot_IVinter(
+    meas_list, Rprefix="M", Rlim=[None, None], Vlim=[None, None], **kwargs
+):
     fig, ax = plt.subplots(figsize=[8, 6])
 
     for meas in meas_list:
@@ -50,7 +52,7 @@ def plot_IVinter(meas_list, Rprefix="M", Rlim=[None, None], Vlim=[None, None]):
         plotR = meas.R * utils.prefix[Rprefix]
         # check formatter
         fmt = meas.fmt if meas.fmt else "^"
-        ax.plot(meas.V, plotR, fmt, label=meas.label)
+        ax.plot(meas.V, plotR, fmt, label=meas.label, **kwargs)
     ax.set_xlabel("Bias voltage [V]")
     ax.set_ylabel(f"Interpad resistance [{Rprefix}Ohm]")
     ax.set_xlim(Vlim)
