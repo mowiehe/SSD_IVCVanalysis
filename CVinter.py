@@ -11,16 +11,18 @@ class CVinter(Measurement):
     all_CVinter = []
 
     @classmethod
-    def get_DataFrame(cls):
-        freq = [i.freq for i in cls.all_CVinter]
-        filename = [i.filename for i in cls.all_CVinter]
-        is_open = [i.is_open for i in cls.all_CVinter]
+    def get_DataFrame(cls, meas_list=None):
+        if not meas_list:
+            meas_list = cls.all_CVinter
+        freq = [i.freq for i in meas_list]
+        filename = [i.filename for i in meas_list]
+        is_open = [i.is_open for i in meas_list]
         df = pd.DataFrame(
             {
                 "Filename": filename,
                 "Frequency [Hz]": freq,
                 "Open measurement": is_open,
-                "CVinter_meas": cls.all_CVinter,
+                "CVinter_meas": meas_list,
             }
         )
         return df

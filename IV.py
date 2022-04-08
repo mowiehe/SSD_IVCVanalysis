@@ -11,14 +11,16 @@ class IV(Measurement):
     all_IV = []
 
     @classmethod
-    def get_DataFrame(cls):
-        temp = [i.T for i in cls.all_IV]
-        filename = [i.filename for i in cls.all_IV]
+    def get_DataFrame(cls, meas_list=None):
+        if not meas_list:
+            meas_list = cls.all_IV
+        temp = [i.T for i in meas_list]
+        filename = [i.filename for i in meas_list]
         df = pd.DataFrame(
             {
                 "Filename": filename,
                 "Temperature": temp,
-                "IV_meas": cls.all_IV,
+                "IV_meas": meas_list,
             }
         )
         return df

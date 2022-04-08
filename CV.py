@@ -11,18 +11,20 @@ class CV(Measurement):
     all_CV = []
 
     @classmethod
-    def get_DataFrame(cls):
-        freq = [i.freq for i in cls.all_CV]
-        mode = [i.mode for i in cls.all_CV]
-        filename = [i.filename for i in cls.all_CV]
-        is_open = [i.is_open for i in cls.all_CV]
+    def get_DataFrame(cls, meas_list=None):
+        if not meas_list:
+            meas_list = cls.all_CV
+        freq = [i.freq for i in meas_list]
+        mode = [i.mode for i in meas_list]
+        filename = [i.filename for i in meas_list]
+        is_open = [i.is_open for i in meas_list]
         df = pd.DataFrame(
             {
                 "Filename": filename,
                 "Frequency [Hz]": freq,
                 "CV-mode": mode,
                 "Open measurement": is_open,
-                "CV_meas": cls.all_CV,
+                "CV_meas": meas_list,
             }
         )
         return df
