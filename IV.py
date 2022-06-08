@@ -43,8 +43,7 @@ class IV(Measurement):
 def plot_IV(
     meas_list, Iprefix="u", Ilim=[None, None], Vlim=[None, None], scale="log", **kwargs
 ):
-    if scale == "log" and Ilim[0] == None:
-        Ilim[0] = 1
+    Ilim[0] = 1 if scale == "log" and Ilim[0] == None else Ilim[0]
     fig, ax = plt.subplots(figsize=[8, 6])
 
     for meas in meas_list:

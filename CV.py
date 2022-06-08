@@ -109,7 +109,11 @@ def plot_CV(meas_list, Cprefix="p", Clim=[None, None], Vlim=[None, None], **kwar
     return fig, ax
 
 
-def plot_C2V(meas_list, C2lim=[None, None], Vlim=[None, None], **kwargs):
+def plot_C2V(meas_list, C2lim=[None, None], Vlim=[None, None], scale="log", **kwargs):
+
+    Vlim[0] = 1 if scale == "log" and Vlim[0] == None else Vlim[0]
+    C2lim[0] = 1 if scale == "log" and C2lim[0] == None else C2lim[0]
+
     fig, ax = plt.subplots(figsize=[8, 6])
 
     for meas in meas_list:
@@ -120,6 +124,8 @@ def plot_C2V(meas_list, C2lim=[None, None], Vlim=[None, None], **kwargs):
     ax.set_ylabel(f"$1 / C^2$ [$1/F^2$]")
     ax.set_xlim(Vlim)
     ax.set_ylim(C2lim)
+    ax.set_yscale(scale)
+    ax.set_xscale(scale)
     ax.grid(True)
     ax.legend()
     return fig, ax
