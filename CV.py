@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import scipy.signal
 import matplotlib.pyplot as plt
 
 from .Measurement import Measurement
@@ -69,6 +70,25 @@ class CV(Measurement):
 
             else:
                 print("Frequencies differ for CV open correction", self.filename)
+
+    def sandbox(self):
+        fig, ax = plt.subplots(figsize=[8, 6])
+        y_norm = self.C / np.max(self.C)
+        x_norm = self.V / np.max(self.V)
+        savgol_windowsize = int(len(self.C) / 30 + 1) * 2 + 1
+        spl_dev = scipy.signal.savgol_filter(
+            y_norm, window_length=savgol_windowsize, polyorder=1, deriv=1
+        )
+        # ax.plot(x_norm, y_norm, label="y_norm")
+        ax.plot(x_norm, spl_dev, label="spl_dev")
+        # dx = [x_norm[i + 1] - x_norm[i] for i in range(len(x_norm) - 1)]
+        dx = np.max(x_norm) / len(x_norm)
+        grad = np.gradient(np.gradient(y_norm, dx), dx)
+        pdb.set_trace()
+        ax.plot(x_norm, grad, label="grad")
+        ax.legend()
+
+        return fig, ax
 
 
 def plot_CV(meas_list, Cprefix="p", Clim=[None, None], Vlim=[None, None], **kwargs):
