@@ -50,7 +50,27 @@ class CVinter(Measurement):
 
         CVinter.all_CVinter.append(self)
 
-    def correct_CVinter_open(self, CVinter_open):
+    def correct_CVinter_open(self, CVinter_open=None, device=None):
+        if self.is_open:  # don't correct if self is an open measutement
+            return -1
+        if not CVinter_open:
+            # no measurement or value is provided, find automatically within measurements of the same device
+            if not device:
+                # device can be specified to search for open measurement
+                device = self.device
+            # same type, frequency and mode (p,s), open measurement
+            open_meas = [
+                meas
+                for meas in device.measurements
+                if meas.Type == self.Type
+                and meas.freq == self.freq
+                and meas.is_open is True
+            ]
+            if len(open_meas) != 1:
+                print("Open measurement not found.")
+            else:
+                CVinter_open = open_meas[0]
+
         # CVinter_open can be a CVinter_meas object or a float value
         # in case of CVinter_meas object, freq have to be identical
         if type(CVinter_open) == CVinter:
@@ -64,6 +84,9 @@ class CVinter(Measurement):
 
             else:
                 print("Frequencies differ for CVinter open correction", self.filename)
+        if type(CVinter_open) == float:
+            self.C = self.C - CVinter_open
+            self.is_corrected = True
 
 
 def plot_CVinter(

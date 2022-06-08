@@ -56,11 +56,34 @@ class CV(Measurement):
     def C2(self):
         return 1 / self.C ** 2
 
-    def correct_CV_open(self, CV_open):
+    def correct_CV_open(self, CV_open=None, device=None):
+        if self.is_open:  # don't correct if self is an open measutement
+            return -1
+        if (
+            not CV_open
+        ):  # no measurement or value is provided, find automatically within measurements of the same device
+            if not device:  # device can be specified to search for open measurement
+                device = self.device
+            # same type, frequency and mode (p,s), open measurement
+            open_meas = [
+                meas
+                for meas in device.measurements
+                if meas.Type == self.Type
+                and meas.freq == self.freq
+                and meas.mode == self.mode
+                and meas.is_open is True
+            ]
+            if len(open_meas) != 1:
+                print("Open measurement not found.")
+            else:
+                CV_open = open_meas[0]
+
         # CV_open can be a CV_meas object or a float value
         # in case of CV_meas object, freq have to be identical
-        if type(CV_open) == CV:
-            if self.freq == CV_open.freq:
+        if type(CV_open) == CV:  # verify type
+            if (
+                self.freq == CV_open.freq and self.mode == CV_open.mode
+            ):  # verify frequency and mode
                 if all(self.V == CV_open.V):
                     CV_open = CV_open.C
                 else:  # take the mean value if different voltages
@@ -70,6 +93,9 @@ class CV(Measurement):
 
             else:
                 print("Frequencies differ for CV open correction", self.filename)
+        if type(CV_open) == float:
+            self.C = self.C - CV_open
+            self.is_corrected = True
 
     def sandbox(self):
         fig, ax = plt.subplots(figsize=[8, 6])
