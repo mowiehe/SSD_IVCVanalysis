@@ -75,11 +75,19 @@ class CVinter(Measurement):
         # in case of CVinter_meas object, freq have to be identical
         if type(CVinter_open) == CVinter:
             if self.freq == CVinter_open.freq:
-                if all(self.V == CVinter_open.V):
-                    CVinter_open = CVinter_open.C
-                else:  # take the mean value if different voltages
-                    CVinter_open = CVinter_open.C.mean()
-                self.C = self.C - CVinter_open
+
+                # find common voltage values and corresponding indices
+                V_common, CV_ind, CV_open_ind = np.intersect1d(
+                    self.V, CVinter_open.V, return_indices=True
+                )
+                # new capacitance arrays measured at common voltages
+                C_common = self.C[CV_ind]
+                C_open_common = CVinter_open.C[CV_open_ind]
+                # subtract open measurement
+                C_common = C_common - C_open_common
+                # reset array values
+                self.C = C_common
+                self.V = V_common
                 self.is_corrected = True
 
             else:

@@ -84,21 +84,18 @@ class CV(Measurement):
             if (
                 self.freq == CV_open.freq and self.mode == CV_open.mode
             ):  # verify frequency and mode
-                if all(self.V == CV_open.V):
-                    print(
-                        self.device.ID,
-                        ": Correcting CV open with device ID",
-                        CV_open.device.ID,
-                    )
-                    CV_open = CV_open.C
-                else:  # take the mean value if different voltages
-                    print(
-                        self.device.ID,
-                        ": Correcting CV open with device ID, mean of C array",
-                        CV_open.device.ID,
-                    )
-                    CV_open = CV_open.C.mean()
-                self.C = self.C - CV_open
+                # find common voltage values and corresponding indices
+                V_common, CV_ind, CV_open_ind = np.intersect1d(
+                    self.V, CV_open.V, return_indices=True
+                )
+                # new capacitance arrays measured at common voltages
+                C_common = self.C[CV_ind]
+                C_open_common = CV_open.C[CV_open_ind]
+                # subtract open measurement
+                C_common = C_common - C_open_common
+                # reset array values
+                self.C = C_common
+                self.V = V_common
                 self.is_corrected = True
 
             else:
