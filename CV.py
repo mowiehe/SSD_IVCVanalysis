@@ -85,8 +85,18 @@ class CV(Measurement):
                 self.freq == CV_open.freq and self.mode == CV_open.mode
             ):  # verify frequency and mode
                 if all(self.V == CV_open.V):
+                    print(
+                        self.device.ID,
+                        ": Correcting CV open with device ID",
+                        CV_open.device.ID,
+                    )
                     CV_open = CV_open.C
                 else:  # take the mean value if different voltages
+                    print(
+                        self.device.ID,
+                        ": Correcting CV open with device ID, mean of C array",
+                        CV_open.device.ID,
+                    )
                     CV_open = CV_open.C.mean()
                 self.C = self.C - CV_open
                 self.is_corrected = True
@@ -94,6 +104,7 @@ class CV(Measurement):
             else:
                 print("Frequencies differ for CV open correction", self.filename)
         if type(CV_open) == float:
+            print(self.device.ID, ": Correcting CV open constant value", CV_open)
             self.C = self.C - CV_open
             self.is_corrected = True
 
