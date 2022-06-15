@@ -39,21 +39,38 @@ class IV(Measurement):
 
         IV.all_IV.append(self)
 
+    def I_norm(self):
+        # get current normalized by volume
+        return self.I / (self.device.area * self.device.thickness)
+
 
 def plot_IV(
-    meas_list, Iprefix="u", Ilim=[None, None], Vlim=[None, None], scale="log", **kwargs
+    meas_list,
+    Iprefix="u",
+    Ilim=[None, None],
+    Vlim=[None, None],
+    scale="log",
+    normalize=False,
+    **kwargs,
 ):
     Ilim[0] = 1 if scale == "log" and Ilim[0] == None else Ilim[0]
     fig, ax = plt.subplots(figsize=[8, 6])
 
     for meas in meas_list:
+        if normalize:
+            plotI = meas.I_norm()
+        else:
+            plotI = meas.I
         # change plot scale
-        plotI = meas.I * utils.prefix[Iprefix]
+        plotI = plotI * utils.prefix[Iprefix]
         # check formatter
         fmt = meas.fmt if meas.fmt else "^"
         ax.plot(meas.V, plotI, fmt, label=meas.label, **kwargs)
     ax.set_xlabel("Bias voltage [V]")
-    ax.set_ylabel(f"Leakage current [{Iprefix}A]")
+    if normalize:
+        ax.set_ylabel(f"Leakage current per unit-volume [{Iprefix}A/cm$^3$]")
+    else:
+        ax.set_ylabel(f"Leakage current [{Iprefix}A]")
     ax.set_xlim(Vlim)
     ax.set_ylim(Ilim)
     ax.set_yscale(scale)
