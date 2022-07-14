@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import scipy.signal
 import matplotlib.pyplot as plt
+import scipy
 
 from .Measurement import Measurement
 from . import utils
@@ -48,6 +49,8 @@ class CV(Measurement):
         self.mode = str.lower(mode)
         self.is_open = is_open
         self.label = self.label if self.label else f"{self.freq/1000}kHz  {self.mode}"
+        self.v_depl = None
+        self.c2_depl = None
 
         self.is_corrected = False
 
@@ -105,24 +108,48 @@ class CV(Measurement):
             self.C = self.C - CV_open
             self.is_corrected = True
 
-    def sandbox(self):
-        fig, ax = plt.subplots(figsize=[8, 6])
-        y_norm = self.C / np.max(self.C)
-        x_norm = self.V / np.max(self.V)
-        savgol_windowsize = int(len(self.C) / 30 + 1) * 2 + 1
-        spl_dev = scipy.signal.savgol_filter(
-            y_norm, window_length=savgol_windowsize, polyorder=1, deriv=1
-        )
-        # ax.plot(x_norm, y_norm, label="y_norm")
-        ax.plot(x_norm, spl_dev, label="spl_dev")
-        # dx = [x_norm[i + 1] - x_norm[i] for i in range(len(x_norm) - 1)]
-        dx = np.max(x_norm) / len(x_norm)
-        grad = np.gradient(np.gradient(y_norm, dx), dx)
-        pdb.set_trace()
-        ax.plot(x_norm, grad, label="grad")
-        ax.legend()
+    def fit_C2(self, rise_lim, const_lim):
+        # provide limits lower and upper: lim=[lower,upper]
+        is_rise = (self.V > rise_lim[0]) & (self.V < rise_lim[1])
+        is_const = (self.V > const_lim[0]) & (self.V < const_lim[1])
+        v_rise = self.V[is_rise]
+        v_const = self.V[is_const]
+        c_rise = self.C2()[is_rise]
+        c_const = self.C2()[is_const]
 
-        return fig, ax
+        (
+            slope_rise,
+            intercept_rise,
+            r_value_rise,
+            p_value_rise,
+            std_err_rise,
+        ) = scipy.stats.linregress(v_rise, c_rise)
+
+        c_rise_fit = utils.line(v_rise, slope_rise, intercept_rise)
+
+        (
+            slope_const,
+            intercept_const,
+            r_value_const,
+            p_value_const,
+            std_err_const,
+        ) = scipy.stats.linregress(v_const, c_const)
+
+        c_const_fit = utils.line(v_const, slope_const, intercept_const)
+
+        v_depl = (intercept_const - intercept_rise) / (slope_rise - slope_const)
+        self.v_depl = int(round(v_depl, 0))
+        self.c2_depl = utils.line(self.v_depl, slope_rise, intercept_rise)
+        self.label = self.label + "  $V_{depl}$" + f" = {self.v_depl} V"
+
+        return (
+            self.v_depl,
+            self.c2_depl,
+            slope_rise,
+            intercept_rise,
+            slope_const,
+            intercept_const,
+        )
 
 
 def plot_CV(meas_list, Cprefix="p", Clim=[None, None], Vlim=[None, None], **kwargs):
@@ -154,12 +181,14 @@ def plot_C2V(meas_list, C2lim=[None, None], Vlim=[None, None], scale="log", **kw
         # check formatter
         fmt = meas.fmt if meas.fmt else "^"
         ax.plot(meas.V, meas.C2(), fmt, label=meas.label, **kwargs)
+        if meas.v_depl:
+            ax.plot(meas.v_depl, meas.c2_depl, "+k", markersize=15)
     ax.set_xlabel("Bias voltage [V]")
     ax.set_ylabel(f"$1 / C^2$ [$1/F^2$]")
     ax.set_xlim(Vlim)
     ax.set_ylim(C2lim)
     ax.set_yscale(scale)
     ax.set_xscale(scale)
-    ax.grid(True)
     ax.legend()
+    ax.grid(True)
     return fig, ax

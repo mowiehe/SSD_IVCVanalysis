@@ -14,3 +14,7 @@ prefix = {
 
 def show_plots():
     plt.show()
+
+
+def line(x, slope, offset):
+    return slope * x + offset
