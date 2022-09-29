@@ -1,10 +1,12 @@
+import ROOT as rt
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+import helper as hp
 
 from . import utils
 from .Measurement import Measurement
-import pdb
+
+hp.set_CLICdpStyle()
 
 
 class IV(Measurement):
@@ -47,33 +49,47 @@ class IV(Measurement):
 def plot_IV(
     meas_list,
     Iprefix="u",
-    Ilim=[None, None],
-    Vlim=[None, None],
+    Ilim=None,
+    Vlim=None,
     scale="log",
     normalize=False,
-    **kwargs,
+    draw="L",
+    colors=[1, 2, 3, 4],
+    markers=[21, 22, 23, 24],
+    leg_loc=[0.2, 0.8, 0.5, 0.85],
 ):
-    Ilim[0] = 1 if scale == "log" and Ilim[0] == None else Ilim[0]
-    fig, ax = plt.subplots(figsize=[8, 6])
 
-    for meas in meas_list:
+    c1 = rt.TCanvas("c1", "c1", 800, 800)
+    if scale == "log":
+        c1.SetLogy()
+    c1.SetGridx()
+    c1.SetGridy()
+    leg = rt.TLegend(leg_loc[0], leg_loc[1], leg_loc[2], leg_loc[3])
+
+    for i, meas in enumerate(meas_list):
         if normalize:
             plotI = meas.I_norm()
         else:
             plotI = meas.I
-        # change plot scale
+
         plotI = plotI * utils.prefix[Iprefix]
-        # check formatter
-        fmt = meas.fmt if meas.fmt else "^"
-        ax.plot(meas.V, plotI, fmt, label=meas.label, **kwargs)
-    ax.set_xlabel("Bias voltage [V]")
-    if normalize:
-        ax.set_ylabel(f"Leakage current per unit-volume [{Iprefix}A/cm$^3$]")
-    else:
-        ax.set_ylabel(f"Leakage current [{Iprefix}A]")
-    ax.set_xlim(Vlim)
-    ax.set_ylim(Ilim)
-    ax.set_yscale(scale)
-    ax.grid(True)
-    ax.legend()
-    return fig, ax
+        g = rt.TGraph(len(meas.V), meas.V, plotI)
+        g.SetLineColor(colors[i % len(colors)])
+        g.SetMarkerColor(colors[i % len(colors)])
+        g.SetMarkerStyle(markers[i % len(markers)])
+        if Vlim:
+            g.GetXaxis().SetRangeUser(Vlim[0], Vlim[1])
+        if Ilim:
+            g.GetYaxis().SetRangeUser(Ilim[0], Ilim[1])
+        if normalize:
+            g.SetTitle(
+                meas.label
+                + f";Bias voltage [V];fLeakage current per unit-volume [{Iprefix}A/cm$^3$]"
+            )
+        else:
+            g.SetTitle(meas.label + f";Bias voltage [V];Leakage current [{Iprefix}A]")
+        g.Draw(f"A{draw}" if i == 0 else f"{draw} SAME")
+        leg.AddEntry(g, meas.label, draw)
+        leg.Draw("same")
+
+    return c1, g, leg
