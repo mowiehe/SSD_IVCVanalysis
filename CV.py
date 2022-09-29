@@ -1,12 +1,11 @@
 import pandas as pd
 import numpy as np
 import scipy.signal
-import matplotlib.pyplot as plt
 import scipy
+import ROOT as rt
 
 from .Measurement import Measurement
 from . import utils
-import pdb
 
 
 class CV(Measurement):
@@ -57,7 +56,7 @@ class CV(Measurement):
         CV.all_CV.append(self)
 
     def C2(self):
-        return 1 / self.C ** 2
+        return 1 / self.C**2
 
     def correct_CV_open(self, CV_open=None, device=None):
         if self.is_open:  # don't correct if self is an open measutement
@@ -152,43 +151,84 @@ class CV(Measurement):
         )
 
 
-def plot_CV(meas_list, Cprefix="p", Clim=[None, None], Vlim=[None, None], **kwargs):
-    fig, ax = plt.subplots(figsize=[8, 6])
+def plot_CV(
+    meas_list,
+    Cprefix="p",
+    Clim=None,
+    Vlim=None,
+    log=False,
+    draw="L",
+    colors=[1, 2, 3, 4],
+    markers=[21, 22, 23, 24],
+    leg_loc=[0.2, 0.8, 0.6, 0.85],
+):
 
-    for meas in meas_list:
+    c = rt.TCanvas("c_CV", "c_CV", 800, 800)
+    if log:
+        c.SetLogy()
+    c.SetGridx()
+    c.SetGridy()
+    leg = rt.TLegend(leg_loc[0], leg_loc[1], leg_loc[2], leg_loc[3])
+
+    for i, meas in enumerate(meas_list):
         # change plot scale
         plotC = meas.C * utils.prefix[Cprefix]
-        # check formatter
-        fmt = meas.fmt if meas.fmt else "^"
-        ax.plot(meas.V, plotC, fmt, label=meas.label, **kwargs)
-    ax.set_xlabel("Bias voltage [V]")
-    ax.set_ylabel(f"Capacitance [{Cprefix}F]")
-    ax.set_xlim(Vlim)
-    ax.set_ylim(Clim)
-    ax.grid(True)
-    ax.legend()
-    return fig, ax
+        g = rt.TGraph(len(meas.V), meas.V, plotC)
+        g.SetLineColor(colors[i % len(colors)])
+        g.SetMarkerColor(colors[i % len(colors)])
+        g.SetMarkerStyle(markers[i % len(markers)])
+        if Vlim:
+            g.GetXaxis().SetRangeUser(Vlim[0], Vlim[1])
+        if Clim:
+            g.GetYaxis().SetRangeUser(Clim[0], Clim[1])
+        g.SetTitle(meas.label + f";Bias voltage [V];Capacitance [{Cprefix}F]")
+        g.Draw(f"A{draw}" if i == 0 else f"{draw} SAME")
+        leg.AddEntry(g, meas.label, draw)
+    leg.Draw("same")
+
+    return c, g, leg
 
 
-def plot_C2V(meas_list, C2lim=[None, None], Vlim=[None, None], scale="log", **kwargs):
+def plot_C2V(
+    meas_list,
+    C2lim=None,
+    Vlim=None,
+    log=True,
+    draw="L",
+    colors=[1, 2, 3, 4],
+    markers=[21, 22, 23, 24],
+    leg_loc=[0.2, 0.8, 0.6, 0.85],
+):
+    c = rt.TCanvas("c_C2V", "c_C2V", 800, 800)
+    if log:
+        c.SetLogy()
+        c.SetLogx()
+    c.SetGridx()
+    c.SetGridy()
+    leg = rt.TLegend(leg_loc[0], leg_loc[1], leg_loc[2], leg_loc[3])
 
-    Vlim[0] = 1 if scale == "log" and Vlim[0] == None else Vlim[0]
-    C2lim[0] = 1 if scale == "log" and C2lim[0] == None else C2lim[0]
+    for i, meas in enumerate(meas_list):
 
-    fig, ax = plt.subplots(figsize=[8, 6])
-
-    for meas in meas_list:
-        # check formatter
-        fmt = meas.fmt if meas.fmt else "^"
-        ax.plot(meas.V, meas.C2(), fmt, label=meas.label, **kwargs)
+        g = rt.TGraph(len(meas.V), meas.V, meas.C2())
+        g_v_depl = rt.TGraph()
+        g.SetLineColor(colors[i % len(colors)])
+        g.SetMarkerColor(colors[i % len(colors)])
+        g.SetMarkerStyle(markers[i % len(markers)])
+        if log:
+            g.GetYaxis().SetTitleOffset(1.9)
+            g.GetXaxis().SetTitleOffset(1.4)
+        if Vlim:
+            g.GetXaxis().SetRangeUser(Vlim[0], Vlim[1])
+        if C2lim:
+            g.GetYaxis().SetRangeUser(C2lim[0], C2lim[1])
+        g.SetTitle(meas.label + ";Bias voltage [V];1 / C^{2} [1/F^{2}]")
+        g.Draw(f"A{draw}" if i == 0 else f"{draw} SAME")
         if meas.v_depl:
-            ax.plot(meas.v_depl, meas.c2_depl, "+k", markersize=15)
-    ax.set_xlabel("Bias voltage [V]")
-    ax.set_ylabel(f"$1 / C^2$ [$1/F^2$]")
-    ax.set_xlim(Vlim)
-    ax.set_ylim(C2lim)
-    ax.set_yscale(scale)
-    ax.set_xscale(scale)
-    ax.legend()
-    ax.grid(True)
-    return fig, ax
+            g_v_depl.AddPoint(meas.v_depl, meas.c2_depl)
+            g_v_depl.SetMarkerStyle(2)
+            g_v_depl.SetMarkerColor(1)
+            g_v_depl.Draw("P same")
+        leg.AddEntry(g, meas.label, draw)
+    leg.Draw("same")
+
+    return c, g, g_v_depl, leg
