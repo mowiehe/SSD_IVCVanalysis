@@ -51,19 +51,18 @@ def plot_IV(
     Iprefix="u",
     Ilim=None,
     Vlim=None,
-    scale="log",
+    log=True,
     normalize=False,
     draw="L",
     colors=[1, 2, 3, 4],
     markers=[21, 22, 23, 24],
-    leg_loc=[0.2, 0.8, 0.5, 0.85],
+    leg_loc=[0.2, 0.8, 0.6, 0.85],
 ):
-
-    c1 = rt.TCanvas("c1", "c1", 800, 800)
-    if scale == "log":
-        c1.SetLogy()
-    c1.SetGridx()
-    c1.SetGridy()
+    c = rt.TCanvas("c_IV", "c_IV", 800, 800)
+    if log:
+        c.SetLogy()
+    c.SetGridx()
+    c.SetGridy()
     leg = rt.TLegend(leg_loc[0], leg_loc[1], leg_loc[2], leg_loc[3])
 
     for i, meas in enumerate(meas_list):
@@ -90,6 +89,6 @@ def plot_IV(
             g.SetTitle(meas.label + f";Bias voltage [V];Leakage current [{Iprefix}A]")
         g.Draw(f"A{draw}" if i == 0 else f"{draw} SAME")
         leg.AddEntry(g, meas.label, draw)
-        leg.Draw("same")
+    leg.Draw("same")
 
-    return c1, g, leg
+    return c, g, leg
