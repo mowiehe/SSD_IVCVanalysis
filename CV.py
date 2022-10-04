@@ -208,7 +208,9 @@ def plot_C2V(
         c.SetLogx()
     c.SetGridx()
     c.SetGridy()
-    leg = rt.TLegend(leg_loc[0], leg_loc[1], leg_loc[2], leg_loc[3])
+    leg = rt.TLegend(
+        leg_loc[0], leg_loc[1] - len(meas_list) * 0.03, leg_loc[2], leg_loc[3]
+    )
 
     for i, meas in enumerate(meas_list):
 
