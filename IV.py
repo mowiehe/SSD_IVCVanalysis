@@ -59,6 +59,7 @@ def plot_IV(
     leg_loc=[0.2, 0.8, 0.6, 0.85],
 ):
     c = rt.TCanvas("c_IV", "c_IV", 800, 800)
+    g_list = []
     if log:
         c.SetLogy()
     c.SetGridx()
@@ -83,12 +84,13 @@ def plot_IV(
         if normalize:
             g.SetTitle(
                 meas.label
-                + f";Bias voltage [V];fLeakage current per unit-volume [{Iprefix}A/cm$^3$]"
+                + f";Bias voltage [V];fLeakage current per unit-volume [{Iprefix}A/cm^{3}]"
             )
         else:
             g.SetTitle(meas.label + f";Bias voltage [V];Leakage current [{Iprefix}A]")
         g.Draw(f"A{draw}" if i == 0 else f"{draw} SAME")
+        g_list.append(g)
         leg.AddEntry(g, meas.label, draw)
     leg.Draw("same")
 
-    return c, g, leg
+    return c, g_list, leg
