@@ -17,7 +17,7 @@ def parser(filename):
         filecontent = reader.readlines()
     if "IV with two I-meter" in filecontent[0]:
         meas_type = "Single IV"
-    if "CV measurement" in filecontent[0]:
+    if "CV" in filecontent[0]:
         meas_type = "Single CV"
     for i, line in enumerate(filecontent):
         if line[0] == ":":
@@ -50,9 +50,11 @@ def parser(filename):
             )
             data = pd.concat([data, row], ignore_index=True)
     ##
-    ##adfjust for older versions
+    ##adjust for older versions
     if header["Program Version"][0].split(",")[-1] == " 6.2011 Gabrysch":
         header["Sample"] = header.pop("device")
+        header["temperature[C]"] = header.pop("temperature [C]")
+
     return meas_type, header, data
 
 
@@ -88,7 +90,7 @@ def read_IV(filename):
         return -1
     I = np.array(df_single["Pad Current [A]"])
     V = np.array(df_single["bias [V]"])
-    T = float(header["temperature [C]"][0])
+    T = float(header["temperature[C]"][0])
 
     return {"V": V, "I": I, "T": T, "filename": filename}
 
