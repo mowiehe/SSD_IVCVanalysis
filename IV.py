@@ -58,7 +58,7 @@ def plot_IV(
     markers=[21, 22, 23, 24],
     leg_loc=[0.2, 0.8, 0.6, 0.85],
 ):
-    c = rt.TCanvas("c_IV", "c_IV", 800, 800)
+    c = rt.TCanvas()
     g_list = []
     if log:
         c.SetLogy()
