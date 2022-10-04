@@ -84,8 +84,11 @@ class Device:
                 for dev in dev_list
                 if dev.fluence == fluence and dev.annealing == annealing
             ]
-        if len(dev_list) != 1:
+        if len(dev_list) > 1:
             raise Exception("Device ID is ambiguous, specify fluence and annealing")
+        if len(dev_list) == 0:
+            raise Exception("Device not found")
+
         return dev_list[0]
 
     def __init__(self, ID, fluence, annealing, **kwargs):
