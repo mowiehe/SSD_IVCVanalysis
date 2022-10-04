@@ -164,6 +164,7 @@ def plot_CV(
 ):
 
     c = rt.TCanvas("c_CV", "c_CV", 800, 800)
+    g_list = []
     if log:
         c.SetLogy()
     c.SetGridx()
@@ -183,10 +184,11 @@ def plot_CV(
             g.GetYaxis().SetRangeUser(Clim[0], Clim[1])
         g.SetTitle(meas.label + f";Bias voltage [V];Capacitance [{Cprefix}F]")
         g.Draw(f"A{draw}" if i == 0 else f"{draw} SAME")
+        g_list.append(g)
         leg.AddEntry(g, meas.label, draw)
     leg.Draw("same")
 
-    return c, g, leg
+    return c, g_list, leg
 
 
 def plot_C2V(
@@ -200,6 +202,7 @@ def plot_C2V(
     leg_loc=[0.2, 0.8, 0.6, 0.85],
 ):
     c = rt.TCanvas("c_C2V", "c_C2V", 800, 800)
+    g_list = []
     if log:
         c.SetLogy()
         c.SetLogx()
@@ -221,14 +224,15 @@ def plot_C2V(
             g.GetXaxis().SetRangeUser(Vlim[0], Vlim[1])
         if C2lim:
             g.GetYaxis().SetRangeUser(C2lim[0], C2lim[1])
-        g.SetTitle(meas.label + ";Bias voltage [V];1 / C^{2} [1/F^{2}]")
+        g.SetTitle(meas.label + ";Bias voltage [V];1 / C^2 [1/F^2]")
         g.Draw(f"A{draw}" if i == 0 else f"{draw} SAME")
         if meas.v_depl:
             g_v_depl.AddPoint(meas.v_depl, meas.c2_depl)
             g_v_depl.SetMarkerStyle(2)
             g_v_depl.SetMarkerColor(1)
             g_v_depl.Draw("P same")
+        g_list.append([g, g_v_depl])
         leg.AddEntry(g, meas.label, draw)
     leg.Draw("same")
 
-    return c, g, g_v_depl, leg
+    return c, g_list, leg
