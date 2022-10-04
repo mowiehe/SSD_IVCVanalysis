@@ -163,7 +163,7 @@ def plot_CV(
     leg_loc=[0.2, 0.8, 0.6, 0.85],
 ):
 
-    c = rt.TCanvas("c_CV", "c_CV", 800, 800)
+    c = rt.TCanvas()
     g_list = []
     if log:
         c.SetLogy()
