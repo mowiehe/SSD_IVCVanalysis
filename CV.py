@@ -57,7 +57,7 @@ class CV(Measurement):
         CV.all_CV.append(self)
 
     def C2(self):
-        return 1 / self.C ** 2
+        return 1 / self.C**2
 
     def correct_CV_open(self, CV_open=None, device=None):
         if self.is_open:  # don't correct if self is an open measutement
@@ -152,8 +152,13 @@ class CV(Measurement):
         )
 
 
-def plot_CV(meas_list, Cprefix="p", Clim=[None, None], Vlim=[None, None], **kwargs):
+def plot_CV(
+    meas_list, Cprefix="p", Clim=[None, None], Vlim=[None, None], log=False, **kwargs
+):
     fig, ax = plt.subplots(figsize=[8, 6])
+
+    Vlim[0] = 1 if log and Vlim[0] == None else Vlim[0]
+    Clim[0] = 1 if log and Clim[0] == None else Clim[0]
 
     for meas in meas_list:
         # change plot scale
@@ -165,15 +170,18 @@ def plot_CV(meas_list, Cprefix="p", Clim=[None, None], Vlim=[None, None], **kwar
     ax.set_ylabel(f"Capacitance [{Cprefix}F]")
     ax.set_xlim(Vlim)
     ax.set_ylim(Clim)
+    if log:
+        ax.set_yscale("log")
+        ax.set_xscale("log")
     ax.grid(True)
     ax.legend()
     return fig, ax
 
 
-def plot_C2V(meas_list, C2lim=[None, None], Vlim=[None, None], scale="log", **kwargs):
+def plot_C2V(meas_list, C2lim=[None, None], Vlim=[None, None], log=True, **kwargs):
 
-    Vlim[0] = 1 if scale == "log" and Vlim[0] == None else Vlim[0]
-    C2lim[0] = 1 if scale == "log" and C2lim[0] == None else C2lim[0]
+    Vlim[0] = 1 if log and Vlim[0] == None else Vlim[0]
+    C2lim[0] = 1 if log and C2lim[0] == None else C2lim[0]
 
     fig, ax = plt.subplots(figsize=[8, 6])
 
@@ -184,11 +192,12 @@ def plot_C2V(meas_list, C2lim=[None, None], Vlim=[None, None], scale="log", **kw
         if meas.v_depl:
             ax.plot(meas.v_depl, meas.c2_depl, "+k", markersize=15)
     ax.set_xlabel("Bias voltage [V]")
-    ax.set_ylabel(f"$1 / C^2$ [$1/F^2$]")
+    ax.set_ylabel("$1 / C^2$ [$1/F^2$]")
     ax.set_xlim(Vlim)
     ax.set_ylim(C2lim)
-    ax.set_yscale(scale)
-    ax.set_xscale(scale)
+    if log:
+        ax.set_yscale("log")
+        ax.set_xscale("log")
     ax.legend()
     ax.grid(True)
     return fig, ax
