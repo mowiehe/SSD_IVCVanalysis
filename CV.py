@@ -151,14 +151,51 @@ class CV(Measurement):
             intercept_const,
         )
 
+    def W(self, index):
+        # return the depletion depth [in µm] based on capacitance and surface area [in cm^2]
+        return (
+            1e4 * utils.constants.perm * self.device.area / self.C[index]
+        )  # 1E4 to convert to um
+
+    def dCdV(self, index):
+        dCdV = []
+        # calculate left and right slopes and average
+        if index != 0:
+            dCdV.append(
+                (self.C[index] - self.C[index - 1])
+                / (self.V[index] - self.V[index - 1])
+            )
+        if index != len(self.V) - 1:
+            dCdV.append(
+                (self.C[index + 1] - self.C[index])
+                / (self.V[index + 1] - self.V[index])
+            )
+        return np.mean(dCdV)
+
+    def Neff(self, index):  # 1/cm^3
+        #         #calculation of net impurity concentration and depth, taken from The electrical characterization of semiconductors, Blood, with help from Esteban, 13.8.2020
+        #         #N(x)=-C^3/(epsilon*e*A^2)*(dC/dV)^-1
+        #         #x= epsilon*A/C
+
+        # if self.dCdV(index)==0: dCdV=1e-15 #avoid division by zero
+        # else: dCdV=self.dCdV(index)
+
+        Neff = -self.C[index] ** 3 / (
+            utils.constants.perm
+            * utils.constants.q_el
+            * self.device.area**2
+            * self.dCdV(index)
+        )
+        return Neff
+
 
 def plot_CV(
     meas_list, Cprefix="p", Clim=[None, None], Vlim=[None, None], log=False, **kwargs
 ):
     fig, ax = plt.subplots(figsize=[8, 6])
 
-    Vlim[0] = 1 if log and Vlim[0] == None else Vlim[0]
-    Clim[0] = 1 if log and Clim[0] == None else Clim[0]
+    Vlim[0] = 1 if log and Vlim[0] is None else Vlim[0]
+    Clim[0] = 1 if log and Clim[0] is None else Clim[0]
 
     for meas in meas_list:
         # change plot scale
@@ -180,8 +217,8 @@ def plot_CV(
 
 def plot_C2V(meas_list, C2lim=[None, None], Vlim=[None, None], log=True, **kwargs):
 
-    Vlim[0] = 1 if log and Vlim[0] == None else Vlim[0]
-    C2lim[0] = 1 if log and C2lim[0] == None else C2lim[0]
+    Vlim[0] = 1 if log and Vlim[0] is None else Vlim[0]
+    C2lim[0] = 1 if log and C2lim[0] is None else C2lim[0]
 
     fig, ax = plt.subplots(figsize=[8, 6])
 
@@ -198,6 +235,30 @@ def plot_C2V(meas_list, C2lim=[None, None], Vlim=[None, None], log=True, **kwarg
     if log:
         ax.set_yscale("log")
         ax.set_xscale("log")
+    ax.legend()
+    ax.grid(True)
+    return fig, ax
+
+
+def plot_Neff(meas_list, Nefflim=[None, None], Wlim=[None, None], **kwargs):
+
+    Nefflim[0] = 1 if Nefflim[0] is None else Nefflim[0]
+
+    fig, ax = plt.subplots(figsize=[8, 6])
+
+    for meas in meas_list:
+        Neff = [meas.Neff(i) for i in range(len(meas.V))]
+        W = [meas.W(i) for i in range(len(meas.V))]
+        # check formatter
+        fmt = meas.fmt if meas.fmt else "^"
+
+        ax.plot(W, Neff, fmt, label=meas.label, **kwargs)
+
+    ax.set_xlabel("Depth [µm]")
+    ax.set_ylabel("N$_{eff}$ [$1/cm^3$]")
+    ax.set_xlim(Wlim)
+    ax.set_ylim(Nefflim)
+    ax.set_yscale("log")
     ax.legend()
     ax.grid(True)
     return fig, ax
