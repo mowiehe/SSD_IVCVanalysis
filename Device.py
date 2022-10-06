@@ -91,16 +91,17 @@ class Device:
 
         return dev_list[0]
 
-    def __init__(self, ID, fluence, annealing, **kwargs):
+    def __init__(self, ID, fluence, annealing, area=None, **kwargs):
         assert type(ID) == str, "Device ID as string"
         assert type(fluence) == float, "Fluence as float"
         assert type(annealing) == int, "Annealing time at 60C as integer"
 
         self.ID = ID
-        self.fluence = fluence
-        self.annealing = annealing
+        self.fluence = fluence  # [neq/cm^2]
+        self.annealing = annealing  # min
         self.__dict__.update(kwargs)
         self.measurements = []
+        self.area = float(area)  # [cm^2]
 
         Device.all_Device.append(self)
 
