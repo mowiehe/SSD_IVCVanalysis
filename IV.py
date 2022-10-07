@@ -54,7 +54,7 @@ def plot_IV(
     **kwargs,
 ):
     Ilim[0] = 1 if log and Ilim[0] == None else Ilim[0]
-    fig, ax = plt.subplots(figsize=[8, 6])
+    fig, ax = plt.subplots()
 
     for meas in meas_list:
         if normalize:

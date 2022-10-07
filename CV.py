@@ -192,7 +192,7 @@ class CV(Measurement):
 def plot_CV(
     meas_list, Cprefix="p", Clim=[None, None], Vlim=[None, None], log=False, **kwargs
 ):
-    fig, ax = plt.subplots(figsize=[8, 6])
+    fig, ax = plt.subplots()
 
     Vlim[0] = 1 if log and Vlim[0] is None else Vlim[0]
     Clim[0] = 1 if log and Clim[0] is None else Clim[0]
@@ -220,7 +220,7 @@ def plot_C2V(meas_list, C2lim=[None, None], Vlim=[None, None], log=True, **kwarg
     Vlim[0] = 1 if log and Vlim[0] is None else Vlim[0]
     C2lim[0] = 1 if log and C2lim[0] is None else C2lim[0]
 
-    fig, ax = plt.subplots(figsize=[8, 6])
+    fig, ax = plt.subplots()
 
     for meas in meas_list:
         # check formatter
@@ -244,7 +244,7 @@ def plot_Neff(meas_list, Nefflim=[None, None], Wlim=[None, None], **kwargs):
 
     Nefflim[0] = 1 if Nefflim[0] is None else Nefflim[0]
 
-    fig, ax = plt.subplots(figsize=[8, 6])
+    fig, ax = plt.subplots()
 
     for meas in meas_list:
         Neff = [meas.Neff(i) for i in range(len(meas.V))]
