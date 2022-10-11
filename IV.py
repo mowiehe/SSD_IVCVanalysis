@@ -51,6 +51,7 @@ def plot_IV(
     Vlim=[None, None],
     log="True",
     normalize=False,
+    fmt="^",
     **kwargs,
 ):
     Ilim[0] = 1 if log and Ilim[0] == None else Ilim[0]
@@ -64,7 +65,7 @@ def plot_IV(
         # change plot scale
         plotI = plotI * utils.prefix[Iprefix]
         # check formatter
-        fmt = meas.fmt if meas.fmt else "^"
+        fmt = meas.fmt if meas.fmt else fmt
         ax.plot(meas.V, plotI, fmt, label=meas.label, **kwargs)
     ax.set_xlabel("Bias voltage [V]")
     if normalize:

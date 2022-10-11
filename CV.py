@@ -190,7 +190,13 @@ class CV(Measurement):
 
 
 def plot_CV(
-    meas_list, Cprefix="p", Clim=[None, None], Vlim=[None, None], log=False, **kwargs
+    meas_list,
+    Cprefix="p",
+    Clim=[None, None],
+    Vlim=[None, None],
+    log=False,
+    fmt="^",
+    **kwargs,
 ):
     fig, ax = plt.subplots()
 
@@ -201,7 +207,7 @@ def plot_CV(
         # change plot scale
         plotC = meas.C * utils.prefix[Cprefix]
         # check formatter
-        fmt = meas.fmt if meas.fmt else "^"
+        fmt = meas.fmt if meas.fmt else fmt
         ax.plot(meas.V, plotC, fmt, label=meas.label, **kwargs)
     ax.set_xlabel("Bias voltage [V]")
     ax.set_ylabel(f"Capacitance [{Cprefix}F]")
@@ -215,7 +221,9 @@ def plot_CV(
     return fig, ax
 
 
-def plot_C2V(meas_list, C2lim=[None, None], Vlim=[None, None], log=True, **kwargs):
+def plot_C2V(
+    meas_list, C2lim=[None, None], Vlim=[None, None], log=True, fmt="^", **kwargs
+):
 
     Vlim[0] = 1 if log and Vlim[0] is None else Vlim[0]
     C2lim[0] = 1 if log and C2lim[0] is None else C2lim[0]
@@ -224,7 +232,7 @@ def plot_C2V(meas_list, C2lim=[None, None], Vlim=[None, None], log=True, **kwarg
 
     for meas in meas_list:
         # check formatter
-        fmt = meas.fmt if meas.fmt else "^"
+        fmt = meas.fmt if meas.fmt else fmt
         ax.plot(meas.V, meas.C2(), fmt, label=meas.label, **kwargs)
         if meas.v_depl:
             ax.plot(meas.v_depl, meas.c2_depl, "+k", markersize=15)
@@ -240,7 +248,7 @@ def plot_C2V(meas_list, C2lim=[None, None], Vlim=[None, None], log=True, **kwarg
     return fig, ax
 
 
-def plot_Neff(meas_list, Nefflim=[None, None], Wlim=[None, None], **kwargs):
+def plot_Neff(meas_list, Nefflim=[None, None], Wlim=[None, None], fmt="^", **kwargs):
 
     Nefflim[0] = 1 if Nefflim[0] is None else Nefflim[0]
 
@@ -250,7 +258,7 @@ def plot_Neff(meas_list, Nefflim=[None, None], Wlim=[None, None], **kwargs):
         Neff = [meas.Neff(i) for i in range(len(meas.V))]
         W = [meas.W(i) for i in range(len(meas.V))]
         # check formatter
-        fmt = meas.fmt if meas.fmt else "^"
+        fmt = meas.fmt if meas.fmt else fmt
 
         ax.plot(W, Neff, fmt, label=meas.label, **kwargs)
 
