@@ -60,13 +60,16 @@ if __name__ == "__main__":
             if not found:
                 raise Exception(f"File {f} not found")
     # check if same number of labels and files
-    if bool(args.l) and len(args.l) != len(files):
+    has_labels = bool(args.l)
+    if has_labels and len(args.l) != len(files):
         raise Exception("Unequal number of files and labels")
     # instantiate measurements
-    meas_list = [
-        parser.instantiate_measurement(f, label=args.l[i])
-        for i, f in enumerate(my_files)
-    ]
+    meas_list = []
+    for i, f in enumerate(my_files):
+        meas = parser.instantiate_measurement(f)
+        if has_labels:
+            meas.label = args.l[i]
+        meas_list.append(meas)
     # identify CV and IV measurements
     IV_list = [meas for meas in meas_list if meas.Type == "IV"]
     CV_list = [meas for meas in meas_list if meas.Type == "CV"]
