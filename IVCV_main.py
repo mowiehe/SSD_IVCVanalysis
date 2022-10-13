@@ -61,7 +61,7 @@ if __name__ == "__main__":
                 raise Exception(f"File {f} not found")
     # check if same number of labels and files
     has_labels = bool(args.l)
-    if has_labels and len(args.l) != len(files):
+    if has_labels and len(args.l) != len(my_files):
         raise Exception("Unequal number of files and labels")
     # instantiate measurements
     meas_list = []
@@ -74,9 +74,13 @@ if __name__ == "__main__":
     IV_list = [meas for meas in meas_list if meas.Type == "IV"]
     CV_list = [meas for meas in meas_list if meas.Type == "CV"]
     # plot IV and CV measurements
-    fig_IV, ax_IV = plot_IV(IV_list, log=False, Ilim=args.Ilim, Iprefix=args.Iprefix)
-    fig_CV, ax_CV = plot_CV(CV_list, Clim=args.Clim, Cprefix=args.Cprefix)
-    fig_IV.tight_layout()
-    fig_CV.tight_layout()
+    if bool(IV_list):
+        fig_IV, ax_IV = plot_IV(
+            IV_list, log=False, Ilim=args.Ilim, Iprefix=args.Iprefix
+        )
+        fig_IV.tight_layout()
+    if bool(CV_list):
+        fig_CV, ax_CV = plot_CV(CV_list, Clim=args.Clim, Cprefix=args.Cprefix)
+        fig_CV.tight_layout()
 
     utils.show_plots()
