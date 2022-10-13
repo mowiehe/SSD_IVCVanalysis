@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-import constants
+from . import constants
 
 prefix = {
     "m": 1e3,
