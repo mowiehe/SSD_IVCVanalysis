@@ -3,10 +3,11 @@
 
 from argparse import ArgumentParser
 import os.path
-from .parser import SSDparser as parser
-from . import utils
-from .IV import plot_IV
-from .CV import plot_CV
+from SSD_IVCVanalysis.parser import SSDparser as parser
+from SSD_IVCVanalysis import utils
+from SSD_IVCVanalysis.IV import plot_IV
+from SSD_IVCVanalysis.CV import plot_CV
+import pdb
 
 ####
 default_search_path = "/home/mw/cernbox/SSD_Defects/CIS_LGADs/EPI_1mm__cv-iv/"
@@ -45,6 +46,7 @@ if __name__ == "__main__":
 
     # check if all given files exist
     my_files = []
+    # pdb.set_trace()
     for f in args.f:
         if os.path.isfile(f):
             my_files.append(f)
