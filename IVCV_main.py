@@ -10,7 +10,7 @@ from SSD_IVCVanalysis.CV import plot_CV
 import pdb
 
 ####
-default_search_path = "/home/mw/cernbox/SSD_Defects/CIS_LGADs/EPI_1mm__cv-iv/"
+default_search_path = "/home/mw/cernbox/SSD_Defects/CIS_LGADs/CZ_1mm__cv-iv"
 ####
 
 if __name__ == "__main__":
@@ -46,19 +46,17 @@ if __name__ == "__main__":
 
     # check if all given files exist
     my_files = []
-    # pdb.set_trace()
     for f in args.f:
         if os.path.isfile(f):
             my_files.append(f)
         else:
             # try to find it under search path
-            found = False
             for root, directory, files in os.walk(args.search_in):
-                if f in files:
-                    my_files.append(os.path.join(root, f))
-                    found = True
-            if not found:
-                raise Exception(f"File {f} not found")
+                found = [
+                    os.path.join(root, ifile) for ifile in files if f in ifile
+                ]  # list of files matching searchstring
+                found.sort()
+                my_files += found
     # check if same number of labels and files
     has_labels = bool(args.l)
     if has_labels and len(args.l) != len(my_files):
@@ -69,6 +67,8 @@ if __name__ == "__main__":
         meas = parser.instantiate_measurement(f)
         if has_labels:
             meas.label = args.l[i]
+        else:
+            meas.label = os.path.basename(f)
         meas_list.append(meas)
     # identify CV and IV measurements
     IV_list = [meas for meas in meas_list if meas.Type == "IV"]
