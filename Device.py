@@ -13,8 +13,8 @@ class Device:
         ID_column="id",
         area_column="area",
         thickness_column="thickness",
-        fluence_column=None,
-        annealing_column=None,
+        fluence_column="fluence",
+        annealing_column="annealing",
         comment="#",
     ):
         new_Devices = []
