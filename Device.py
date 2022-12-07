@@ -1,5 +1,5 @@
 import pandas as pd
-import pdb
+import csv
 
 
 class Device:
@@ -10,50 +10,47 @@ class Device:
     def instantiate_from_csv(
         cls,
         csv_file,
-        ID_column="ID",
-        sep=",",
+        ID_column="id",
+        area_column="area",
+        thickness_column="thickness",
+        fluence_column=None,
+        annealing_column=None,
         comment="#",
-        fluence="fluence",
-        annealing="annealing",
     ):
         new_Devices = []
         # read csv_file
-        dev_info = pd.read_csv(csv_file, sep=sep, dtype="object", comment=comment)
-        # fluence and annealing can be specified as float/int of by giving the column name
-        if type(fluence) == float:
-            fluence_column = "fluence"
-            dev_info[fluence_column] = fluence
-        else:
-            fluence_column = fluence
-            dev_info[fluence_column] = dev_info[fluence_column].astype(float)
-        if type(annealing) == int:
-            annealing_column = "annealing"
-            dev_info[annealing_column] = annealing
-        else:
-            annealing_column = annealing
-            dev_info[annealing_column] = dev_info[annealing_column].astype(int)
+        with open(csv_file) as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                if row["id"][0] == comment:
+                    continue
+                ID = row[ID_column]
+                area = float(row[area_column]) if area_column else None
+                thickness = float(row[thickness_column]) if thickness_column else None
+                fluence = float(row[fluence_column]) if fluence_column else None
+                annealing = int(row[annealing_column]) if annealing_column else None
+                kwargs = {
+                    key: row[key]
+                    for key in row
+                    if key
+                    not in [
+                        ID_column,
+                        area_column,
+                        thickness_column,
+                        fluence_column,
+                        annealing_column,
+                    ]
+                }
 
-        # instantiate one device object per row. ID, fluence and annealing are set explicitly, all other keywords are passed as kwargs
-        def inst_Device_from_dev_info(x):
-            dev = Device(
-                ID=x[ID_column],
-                fluence=x[fluence_column],
-                annealing=x[annealing_column],
-                **x.loc[
-                    ~(
-                        (x.keys() == ID_column)
-                        | (x.keys() == fluence_column)
-                        | (x.keys() == annealing_column)
-                    ),
-                ].to_dict(),
-            )
-            new_Devices.append(dev)
-            return dev
-
-        dev_info.apply(
-            inst_Device_from_dev_info,
-            axis=1,
-        )
+                dev = Device(
+                    ID=ID,
+                    fluence=fluence,
+                    annealing=annealing,
+                    thickness=thickness,
+                    area=area,
+                    **kwargs,
+                )
+                new_Devices.append(dev)
         return new_Devices
 
     @classmethod
@@ -91,17 +88,28 @@ class Device:
 
         return dev_list[0]
 
-    def __init__(self, ID, fluence, annealing, area=None, **kwargs):
+    def __init__(
+        self, ID, fluence=None, annealing=None, area=None, thickness=None, **kwargs
+    ):
         assert type(ID) == str, "Device ID as string"
-        assert type(fluence) == float, "Fluence as float"
-        assert type(annealing) == int, "Annealing time at 60C as integer"
+        assert type(fluence) == float or fluence == None, "Fluence as float"
+        assert (
+            type(annealing) == int or annealing == None
+        ), "Annealing time at 60C as integer"
+        assert (
+            type(area) == float or area == None
+        ), "Device active area as float or None"
+        assert (
+            type(thickness) == float or thickness == None
+        ), "Device thickness as float or None"
 
         self.ID = ID
         self.fluence = fluence  # [neq/cm^2]
         self.annealing = annealing  # min
         self.__dict__.update(kwargs)
         self.measurements = []
-        self.area = float(area)  # [cm^2]
+        self.area = area  # [cm^2]
+        self.thickness = thickness  # [µm]
 
         Device.all_Device.append(self)
 
