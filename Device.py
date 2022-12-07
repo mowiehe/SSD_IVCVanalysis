@@ -85,9 +85,9 @@ class Device:
                 if dev.fluence == fluence and dev.annealing == annealing
             ]
         if len(dev_list) > 1:
-            raise Exception("Device ID is ambiguous, specify fluence and annealing")
+            raise Exception("Device ID is ambiguous, specify fluence and annealing", ID)
         if len(dev_list) == 0:
-            raise Exception("Device not found")
+            raise Exception("Device not found", ID)
 
         return dev_list[0]
 
