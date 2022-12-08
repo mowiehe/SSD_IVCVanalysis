@@ -5,6 +5,7 @@ class Measurement:
     def __init__(self, filename, T, device=None, fmt=None, label=None):
         assert type(filename) == str, "Provide filename as str"
         self.filename = filename
+        self.filename_nopath = self.filename.split("/")[-1]
         self.device = device
         self.fmt = fmt
         self.label = label
