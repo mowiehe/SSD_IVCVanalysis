@@ -53,6 +53,7 @@ class CV(Measurement):
         self.c2_depl = None
 
         self.is_corrected = False
+        self.is_fit = False
 
         CV.all_CV.append(self)
 
@@ -114,8 +115,9 @@ class CV(Measurement):
         is_const = (self.V > const_lim[0]) & (self.V < const_lim[1])
         v_rise = self.V[is_rise]
         v_const = self.V[is_const]
-        c_rise = self.C2()[is_rise]
-        c_const = self.C2()[is_const]
+        c2_rise = self.C2()[is_rise]
+        c2_const = self.C2()[is_const]
+        self.c_end = np.mean(self.C[is_const])
 
         (
             slope_rise,
@@ -123,9 +125,10 @@ class CV(Measurement):
             r_value_rise,
             p_value_rise,
             std_err_rise,
-        ) = scipy.stats.linregress(v_rise, c_rise)
+        ) = scipy.stats.linregress(v_rise, c2_rise)
 
-        c_rise_fit = utils.line(v_rise, slope_rise, intercept_rise)
+        self.v_rise_fit = v_rise
+        self.c2_rise_fit = utils.line(self.v_rise_fit, slope_rise, intercept_rise)
 
         (
             slope_const,
@@ -133,14 +136,16 @@ class CV(Measurement):
             r_value_const,
             p_value_const,
             std_err_const,
-        ) = scipy.stats.linregress(v_const, c_const)
+        ) = scipy.stats.linregress(v_const, c2_const)
 
-        c_const_fit = utils.line(v_const, slope_const, intercept_const)
+        self.v_const_fit = v_const
+        self.c2_const_fit = utils.line(self.v_const_fit, slope_const, intercept_const)
 
         v_depl = (intercept_const - intercept_rise) / (slope_rise - slope_const)
-        self.v_depl = int(round(v_depl, 0))
+        self.v_depl = round(v_depl, 2)
         self.c2_depl = utils.line(self.v_depl, slope_rise, intercept_rise)
-        self.label = self.label + "  $V_{depl}$" + f" = {self.v_depl} V"
+
+        self.is_fit = True
 
         return (
             self.v_depl,
@@ -172,7 +177,7 @@ class CV(Measurement):
             )
         return np.mean(dCdV)
 
-    def Neff(self, index):  # 1/cm^3
+    def Neff_index(self, index):  # 1/cm^3
         #         #calculation of net impurity concentration and depth, taken from The electrical characterization of semiconductors, Blood, with help from Esteban, 13.8.2020
         #         #N(x)=-C^3/(epsilon*e*A^2)*(dC/dV)^-1
         #         #x= epsilon*A/C
@@ -187,6 +192,15 @@ class CV(Measurement):
             * self.dCdV(index)
         )
         return Neff
+
+    def Neff(self):
+        epsilon = utils.constants.perm  # F/cm
+        q = utils.constants.q_el  # C
+        area = self.device.area  # cm^2
+        Cend = self.c_end  # F
+        Vdep = self.v_depl
+
+        return 2 * Cend**2 * Vdep / (area**2 * epsilon * q)
 
 
 def plot_CV(
@@ -222,7 +236,13 @@ def plot_CV(
 
 
 def plot_C2V(
-    meas_list, C2lim=[None, None], Vlim=[None, None], log=True, fmt="^", **kwargs
+    meas_list,
+    C2lim=[None, None],
+    Vlim=[None, None],
+    log=True,
+    fmt="^",
+    show_fit=False,
+    **kwargs,
 ):
 
     Vlim[0] = 1 if log and Vlim[0] is None else Vlim[0]
@@ -232,10 +252,22 @@ def plot_C2V(
 
     for meas in meas_list:
         # check formatter
+        if meas.is_fit and show_fit:  # update label
+            meas.label = (
+                meas.label
+                + "\n  $V_{depl}$"
+                + f" = {meas.v_depl} V"
+                + ",  $N_{eff}$"
+                + f" = {meas.Neff():.2e}"
+                + " $cm^{-3}$"
+            )
         fmt = meas.fmt if meas.fmt else fmt
+        # plot data
         ax.plot(meas.V, meas.C2(), fmt, label=meas.label, **kwargs)
-        if meas.v_depl:
+        if meas.is_fit and show_fit:  # plot lines
             ax.plot(meas.v_depl, meas.c2_depl, "+k", markersize=15)
+            ax.plot(meas.v_rise_fit, meas.c2_rise_fit, "r--")
+            ax.plot(meas.v_const_fit, meas.c2_const_fit, "r--")
     ax.set_xlabel("Bias voltage [V]")
     ax.set_ylabel("$1 / C^2$ [$1/F^2$]")
     ax.set_xlim(Vlim)
@@ -255,7 +287,7 @@ def plot_Neff(meas_list, Nefflim=[None, None], Wlim=[None, None], fmt="^", **kwa
     fig, ax = plt.subplots()
 
     for meas in meas_list:
-        Neff = [meas.Neff(i) for i in range(len(meas.V))]
+        Neff = [meas.Neff_index(i) for i in range(len(meas.V))]
         W = [meas.W(i) for i in range(len(meas.V))]
         # check formatter
         fmt = meas.fmt if meas.fmt else fmt
