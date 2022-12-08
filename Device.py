@@ -92,16 +92,16 @@ class Device:
         self, ID, fluence=None, annealing=None, area=None, thickness=None, **kwargs
     ):
         assert type(ID) == str, "Device ID as string"
-        assert type(fluence) == float or fluence == None, "Fluence as float"
+        assert type(fluence) == float or fluence == None, "Fluence [neq/cm^2] as float"
         assert (
             type(annealing) == int or annealing == None
-        ), "Annealing time at 60C as integer"
+        ), "Annealing time at 60C [min] as integer"
         assert (
             type(area) == float or area == None
-        ), "Device active area as float or None"
+        ), "Device active area [cm^2] as float or None"
         assert (
             type(thickness) == float or thickness == None
-        ), "Device thickness as float or None"
+        ), "Device thickness [µm] as float or None"
 
         self.ID = ID
         self.fluence = fluence  # [neq/cm^2]
