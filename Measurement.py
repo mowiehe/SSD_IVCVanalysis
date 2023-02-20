@@ -17,3 +17,8 @@ class Measurement:
             device.add_measurement(self)
 
         Measurement.all_Measurement.append(self)
+
+    def print_info(self):
+        print("###", self.filename_nopath)
+        print("Label:", self.label)
+        print("Type:", self.Type, ", temperature [°C]:", self.T)

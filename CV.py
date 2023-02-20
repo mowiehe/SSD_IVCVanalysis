@@ -202,6 +202,10 @@ class CV(Measurement):
 
         return 2 * Cend**2 * Vdep / (area**2 * epsilon * q)
 
+    def print_info(self):
+        super().print_info()
+        print("Frequency [Hz]:", self.freq, ", mode:", self.mode)
+
 
 def plot_CV(
     meas_list,
@@ -252,8 +256,9 @@ def plot_C2V(
 
     for meas in meas_list:
         # check formatter
+        label = meas.label
         if meas.is_fit and show_fit:  # update label
-            meas.label = (
+            label = (
                 meas.label
                 + "\n  $V_{depl}$"
                 + f" = {meas.v_depl} V"
@@ -263,7 +268,7 @@ def plot_C2V(
             )
         fmt = meas.fmt if meas.fmt else fmt
         # plot data
-        ax.plot(meas.V, meas.C2(), fmt, label=meas.label, **kwargs)
+        ax.plot(meas.V, meas.C2(), fmt, label=label, **kwargs)
         if meas.is_fit and show_fit:  # plot lines
             ax.plot(meas.v_depl, meas.c2_depl, "+k", markersize=15)
             ax.plot(meas.v_rise_fit, meas.c2_rise_fit, "r--")

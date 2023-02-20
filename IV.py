@@ -43,6 +43,9 @@ class IV(Measurement):
         # get current normalized by volume
         return self.I / (self.device.area * self.device.thickness)
 
+    def print_info(self):
+        super().print_info()
+
 
 def plot_IV(
     meas_list,
