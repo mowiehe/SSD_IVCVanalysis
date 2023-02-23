@@ -55,6 +55,7 @@ def plot_IV(
     log="True",
     normalize=False,
     fmt="^",
+    leg_title=None,
     **kwargs,
 ):
     Ilim[0] = 1 if log and Ilim[0] == None else Ilim[0]
@@ -80,5 +81,5 @@ def plot_IV(
     if log:
         ax.set_yscale("log")
     ax.grid(True)
-    ax.legend()
+    ax.legend(title=leg_title)
     return fig, ax

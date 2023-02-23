@@ -214,6 +214,7 @@ def plot_CV(
     Vlim=[None, None],
     log=False,
     fmt="^",
+    leg_title=None,
     **kwargs,
 ):
     fig, ax = plt.subplots()
@@ -235,7 +236,7 @@ def plot_CV(
         ax.set_yscale("log")
         ax.set_xscale("log")
     ax.grid(True)
-    ax.legend()
+    ax.legend(title=leg_title)
     return fig, ax
 
 
@@ -246,6 +247,7 @@ def plot_C2V(
     log=True,
     fmt="^",
     show_fit=False,
+    leg_title=None,
     **kwargs,
 ):
 
@@ -280,12 +282,19 @@ def plot_C2V(
     if log:
         ax.set_yscale("log")
         ax.set_xscale("log")
-    ax.legend()
+    ax.legend(title=leg_title)
     ax.grid(True)
     return fig, ax
 
 
-def plot_Neff(meas_list, Nefflim=[None, None], Wlim=[None, None], fmt="^", **kwargs):
+def plot_Neff(
+    meas_list,
+    Nefflim=[None, None],
+    Wlim=[None, None],
+    fmt="^",
+    leg_title=None,
+    **kwargs,
+):
 
     Nefflim[0] = 1 if Nefflim[0] is None else Nefflim[0]
 
@@ -304,6 +313,6 @@ def plot_Neff(meas_list, Nefflim=[None, None], Wlim=[None, None], fmt="^", **kwa
     ax.set_xlim(Wlim)
     ax.set_ylim(Nefflim)
     ax.set_yscale("log")
-    ax.legend()
+    ax.legend(title=leg_title)
     ax.grid(True)
     return fig, ax
