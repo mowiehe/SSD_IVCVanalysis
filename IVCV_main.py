@@ -7,7 +7,7 @@ import os.path
 from SSD_IVCVanalysis.parser import SSDparser as parser
 from SSD_IVCVanalysis import utils
 from SSD_IVCVanalysis.IV import plot_IV
-from SSD_IVCVanalysis.CV import plot_CV
+from SSD_IVCVanalysis.CV import plot_CV, plot_C2V
 import pdb
 
 ####
@@ -32,6 +32,14 @@ if __name__ == "__main__":
         type=float,
         help="Low and high limit of capacitance: -Clim low high",
     )
+    PARSER.add_argument(
+        "-C2lim",
+        nargs="+",
+        default=[None, None],
+        type=float,
+        help="Low and high limit of 1/C2: -C2lim low high",
+    )
+
     PARSER.add_argument("-Iprefix", default="p", help="Unit prefix of current")
     PARSER.add_argument(
         "-Cprefix",
@@ -97,5 +105,9 @@ if __name__ == "__main__":
         fig_CV, ax_CV = plot_CV(CV_list, Clim=args.Clim, Cprefix=args.Cprefix)
         ax_CV.set_title(args.title)
         fig_CV.tight_layout()
+
+        fig_C2V, ax_C2V = plot_C2V(CV_list, C2lim=args.C2lim, log=False)
+        ax_C2V.set_title(args.title)
+        fig_C2V.tight_layout()
 
     utils.show_plots()
